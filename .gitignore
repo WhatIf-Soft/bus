@@ -1,0 +1,45 @@
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.coverprofile
+vendor/
+tmp/
+
+# Node.js
+node_modules/
+.next/
+.turbo/
+dist/
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Coverage
+coverage/
+
+# Docker
+docker-compose.override.yml
+
+# Build artifacts
+bin/

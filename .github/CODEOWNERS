@@ -1,0 +1,18 @@
+# Default owners
+* @busexpress/core
+
+# Backend services
+/pkg/ @busexpress/backend
+/services/ @busexpress/backend
+
+# Frontend
+/web/ @busexpress/frontend
+/packages/ @busexpress/frontend
+
+# Infrastructure
+/deploy/ @busexpress/ops
+/docker-compose.yml @busexpress/ops
+/.github/ @busexpress/ops
+
+# Database
+/services/*/migrations/ @busexpress/dba

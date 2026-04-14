@@ -1,0 +1,20 @@
+# Air hot-reload configuration for user-service.
+# Install: go install github.com/air-verse/air@latest
+
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/main ./cmd/server"
+bin = "tmp/main"
+args_bin = ["serve"]
+include_ext = ["go", "sql", "yaml"]
+exclude_dir = ["tmp", "vendor", "node_modules"]
+exclude_regex = ["_test\\.go$"]
+delay = 1000
+
+[log]
+time = false
+
+[misc]
+clean_on_exit = true

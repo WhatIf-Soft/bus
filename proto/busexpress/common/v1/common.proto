@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package busexpress.common.v1;
+
+option go_package = "github.com/busexpress/proto/gen/go/busexpress/common/v1;commonv1";
+
+import "google/protobuf/timestamp.proto";
+
+// UUID wrapper for cross-service identity
+message UUID {
+  string value = 1;
+}
+
+// Standard pagination request
+message PaginationRequest {
+  int32 page = 1;
+  int32 per_page = 2;
+}
+
+// Standard pagination response metadata
+message PaginationMeta {
+  int32 page = 1;
+  int32 per_page = 2;
+  int64 total = 3;
+  int32 total_pages = 4;
+}
+
+// Standard error detail
+message ErrorDetail {
+  string code = 1;
+  string message = 2;
+  string field = 3;
+}
+
+// Booking status enum shared across services
+enum BookingStatus {
+  BOOKING_STATUS_UNSPECIFIED = 0;
+  BOOKING_STATUS_PENDING_SEAT = 1;
+  BOOKING_STATUS_PENDING_PAYMENT = 2;
+  BOOKING_STATUS_CONFIRMED = 3;
+  BOOKING_STATUS_CANCELLED = 4;
+  BOOKING_STATUS_PARTIALLY_CANCELLED = 5;
+  BOOKING_STATUS_REFUNDED = 6;
+  BOOKING_STATUS_PARTIALLY_REFUNDED = 7;
+  BOOKING_STATUS_EXPIRED = 8;
+  BOOKING_STATUS_USED = 9;
+  BOOKING_STATUS_FAILED = 10;
+  BOOKING_STATUS_DISPUTED = 11;
+}
+
+// User role enum
+enum UserRole {
+  USER_ROLE_UNSPECIFIED = 0;
+  USER_ROLE_VOYAGEUR = 1;
+  USER_ROLE_OPERATEUR = 2;
+  USER_ROLE_AGENT_SUPPORT = 3;
+  USER_ROLE_ADMIN = 4;
+}

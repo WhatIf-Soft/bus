@@ -1,0 +1,22 @@
+go 1.23.0
+
+toolchain go1.23.2
+
+use (
+	./pkg
+	./services/admin
+	./services/booking
+	./services/gateway
+	./services/gps
+	./services/notification
+	./services/operator
+	./services/payment
+	./services/reconciliation
+	./services/review
+	./services/search
+	./services/support
+	./services/ticket
+	./services/user
+	./services/ussd
+	./services/waitlist
+)

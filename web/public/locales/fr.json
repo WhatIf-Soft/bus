@@ -1,0 +1,13 @@
+{
+  "home": {
+    "title": "Reservez votre bus en quelques clics",
+    "subtitle": "Comparez les prix, choisissez votre siege et voyagez a travers l'Afrique de l'Ouest en toute serenite."
+  },
+  "common": {
+    "search": "Rechercher",
+    "book": "Reserver",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "loading": "Chargement..."
+  }
+}

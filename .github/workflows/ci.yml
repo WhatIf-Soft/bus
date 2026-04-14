@@ -1,0 +1,126 @@
+# CI Pipeline — BusExpress
+# Runs on push to main/develop and on all pull requests.
+# Two parallel jobs: Go backend and frontend.
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Go backend: lint, test, coverage gate, build
+  # ---------------------------------------------------------------------------
+  go:
+    name: Go
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: go-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            go-${{ runner.os }}-
+
+      - name: Install golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.62
+          args: --timeout=5m
+          working-directory: pkg
+
+      - name: Lint services
+        run: |
+          for svc in services/*/; do
+            echo "::group::Linting ${svc}"
+            golangci-lint run --timeout=5m "./${svc}/..."
+            echo "::endgroup::"
+          done
+
+      - name: Run tests (pkg)
+        run: |
+          cd pkg
+          go test -race -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Check coverage >= 80%
+        run: |
+          cd pkg
+          COVERAGE=$(go tool cover -func=coverage.out | grep '^total:' | awk '{print $3}' | tr -d '%')
+          echo "Total coverage: ${COVERAGE}%"
+          if [ "$(echo "${COVERAGE} < 80" | bc -l)" -eq 1 ]; then
+            echo "::error::Coverage ${COVERAGE}% is below the 80% threshold"
+            exit 1
+          fi
+
+      - name: Build all services
+        run: |
+          for svc in services/*/; do
+            svc_name=$(basename "${svc}")
+            echo "::group::Building ${svc_name}"
+            (cd "${svc}" && go build ./cmd/server)
+            echo "::endgroup::"
+          done
+
+  # ---------------------------------------------------------------------------
+  # Frontend: lint, typecheck, test, build, bundle-size gate
+  # ---------------------------------------------------------------------------
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: cd web && pnpm lint
+
+      - name: Typecheck
+        run: cd web && pnpm typecheck
+
+      - name: Test
+        run: cd web && pnpm test
+
+      - name: Build
+        run: cd web && pnpm build
+
+      - name: Check bundle size (<= 200 KB gzipped JS)
+        run: |
+          BUNDLE_BYTES=$(find web/.next/static -name "*.js" -print0 | xargs -0 cat | gzip -c | wc -c)
+          BUNDLE_KB=$((BUNDLE_BYTES / 1024))
+          echo "Gzipped JS bundle: ${BUNDLE_KB} KB (${BUNDLE_BYTES} bytes)"
+          if [ "${BUNDLE_KB}" -gt 200 ]; then
+            echo "::error::Bundle size ${BUNDLE_KB} KB exceeds 200 KB budget"
+            exit 1
+          fi

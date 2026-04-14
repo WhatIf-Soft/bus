@@ -1,0 +1,44 @@
+run:
+  go: "1.23"
+  timeout: 5m
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - gosec
+    - exhaustive
+    - gocritic
+    - gofumpt
+    - revive
+    - bodyclose
+    - noctx
+
+linters-settings:
+  funlen:
+    lines: 50
+    statements: 40
+  lll:
+    line-length: 800
+  exhaustive:
+    default-signifies-exhaustive: true
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+  revive:
+    rules:
+      - name: exported
+        severity: warning
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - funlen
+        - gosec
+        - gocritic
+    - path: _test\.go
+      text: "G101"

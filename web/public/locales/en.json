@@ -1,0 +1,13 @@
+{
+  "home": {
+    "title": "Book your bus in a few clicks",
+    "subtitle": "Compare prices, choose your seat and travel across West Africa with peace of mind."
+  },
+  "common": {
+    "search": "Search",
+    "book": "Book",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading..."
+  }
+}
