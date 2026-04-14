@@ -1,35 +1,64 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type { User } from '@busexpress/shared-types';
 
-type AuthState = {
+interface AuthState {
   readonly user: User | null;
   readonly accessToken: string | null;
   readonly refreshToken: string | null;
-};
+  readonly expiresAt: string | null;
+}
 
-type AuthActions = {
-  readonly login: (user: User, accessToken: string, refreshToken: string) => void;
-  readonly logout: () => void;
-  readonly setTokens: (accessToken: string, refreshToken: string) => void;
-  readonly isAuthenticated: () => boolean;
-};
+interface AuthActions {
+  readonly setSession: (
+    user: User | null,
+    accessToken: string,
+    refreshToken: string,
+    expiresAt: string,
+  ) => void;
+  readonly setUser: (user: User) => void;
+  readonly setTokens: (
+    accessToken: string,
+    refreshToken: string,
+    expiresAt: string,
+  ) => void;
+  readonly clear: () => void;
+}
 
 const initialState: AuthState = {
   user: null,
   accessToken: null,
   refreshToken: null,
+  expiresAt: null,
 };
 
-export const useAuthStore = create<AuthState & AuthActions>()((set, get) => ({
-  ...initialState,
+export const useAuthStore = create<AuthState & AuthActions>()(
+  persist(
+    (set) => ({
+      ...initialState,
 
-  login: (user, accessToken, refreshToken) =>
-    set({ user, accessToken, refreshToken }),
+      setSession: (user, accessToken, refreshToken, expiresAt) =>
+        set({ user, accessToken, refreshToken, expiresAt }),
 
-  logout: () => set(initialState),
+      setUser: (user) => set({ user }),
 
-  setTokens: (accessToken, refreshToken) =>
-    set({ accessToken, refreshToken }),
+      setTokens: (accessToken, refreshToken, expiresAt) =>
+        set({ accessToken, refreshToken, expiresAt }),
 
-  isAuthenticated: () => get().accessToken !== null && get().user !== null,
-}));
+      clear: () => set(initialState),
+    }),
+    {
+      name: 'busexpress-auth',
+      storage: createJSONStorage(() => localStorage),
+      // Only persist refresh token + user — access token should be re-issued on each session
+      partialize: (state) => ({
+        user: state.user,
+        refreshToken: state.refreshToken,
+      }),
+    },
+  ),
+);
+
+export function useIsAuthenticated(): boolean {
+  return useAuthStore((state) => state.accessToken !== null);
+}

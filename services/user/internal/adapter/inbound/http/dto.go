@@ -53,3 +53,28 @@ type Enable2FAResponse struct {
 type Verify2FARequest struct {
 	Code string `json:"code" validate:"required,len=6"`
 }
+
+// Login2FARequest is the payload for login when 2FA is enabled.
+type Login2FARequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+	Code     string `json:"code" validate:"required,len=6"`
+}
+
+// SavedPassengerRequest is the payload for creating/updating a saved passenger.
+type SavedPassengerRequest struct {
+	FirstName      string     `json:"first_name" validate:"required,min=2,max=100"`
+	LastName       string     `json:"last_name" validate:"required,min=2,max=100"`
+	DateOfBirth    *time.Time `json:"date_of_birth,omitempty"`
+	DocumentNumber *string    `json:"document_number,omitempty" validate:"omitempty,min=4,max=50"`
+}
+
+// SavedPassengerResponse is the safe public representation (document masked).
+type SavedPassengerResponse struct {
+	ID                   string     `json:"id"`
+	FirstName            string     `json:"first_name"`
+	LastName             string     `json:"last_name"`
+	DateOfBirth          *time.Time `json:"date_of_birth,omitempty"`
+	DocumentNumberMasked *string    `json:"document_number_masked,omitempty"`
+	CreatedAt            time.Time  `json:"created_at"`
+}

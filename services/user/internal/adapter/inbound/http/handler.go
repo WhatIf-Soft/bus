@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
+	"github.com/busexpress/pkg/auth"
 	"github.com/busexpress/pkg/response"
 	"github.com/busexpress/pkg/validation"
 	"github.com/busexpress/services/user/internal/domain"
@@ -58,7 +59,33 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokens, err := h.service.Login(r.Context(), req.Email, req.Password)
+	tokens, err := h.service.Login(r.Context(), req.Email, req.Password, sessionMetaFromRequest(r))
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+
+	response.JSON(w, http.StatusOK, LoginResponse{
+		AccessToken:  tokens.AccessToken,
+		RefreshToken: tokens.RefreshToken,
+		ExpiresAt:    tokens.ExpiresAt,
+	})
+}
+
+// Login2FA handles POST /api/v1/users/login/2fa.
+func (h *Handler) Login2FA(w http.ResponseWriter, r *http.Request) {
+	var req Login2FARequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, domain.ErrInvalidCredentials)
+		return
+	}
+
+	if err := validation.ValidateStruct(&req); err != nil {
+		response.Error(w, err)
+		return
+	}
+
+	tokens, err := h.service.LoginWith2FA(r.Context(), req.Email, req.Password, req.Code, sessionMetaFromRequest(r))
 	if err != nil {
 		response.Error(w, err)
 		return
@@ -84,7 +111,7 @@ func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokens, err := h.service.RefreshToken(r.Context(), req.RefreshToken)
+	tokens, err := h.service.RefreshToken(r.Context(), req.RefreshToken, sessionMetaFromRequest(r))
 	if err != nil {
 		response.Error(w, err)
 		return
@@ -245,15 +272,25 @@ func (h *Handler) DeleteAccount(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, map[string]string{"status": "deleted"})
 }
 
-// extractUserID reads the authenticated user's ID from the request context.
-// In production this is set by the auth middleware; here we use a placeholder key.
+// extractUserID reads the authenticated user's ID from JWT claims set by auth middleware.
 func extractUserID(r *http.Request) (uuid.UUID, error) {
-	// TODO: Extract from JWT claims set by auth middleware.
-	id, ok := r.Context().Value("user_id").(string)
-	if !ok {
+	claims, err := auth.ClaimsFromContext(r.Context())
+	if err != nil {
 		return uuid.Nil, domain.ErrInvalidCredentials
 	}
-	return uuid.Parse(id)
+	return uuid.Parse(claims.UserID)
+}
+
+// sessionMetaFromRequest collects device + IP info for session records.
+func sessionMetaFromRequest(r *http.Request) port.SessionMeta {
+	ip := r.Header.Get("X-Forwarded-For")
+	if ip == "" {
+		ip = r.RemoteAddr
+	}
+	return port.SessionMeta{
+		DeviceInfo: r.UserAgent(),
+		IPAddress:  ip,
+	}
 }
 
 func toProfileResponse(u domain.User) ProfileResponse {

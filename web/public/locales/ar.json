@@ -9,5 +9,35 @@
     "cancel": "الغاء",
     "confirm": "تاكيد",
     "loading": "جاري التحميل..."
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "loginSubtitle": "أدخل بيانات الاعتماد للوصول إلى حسابك",
+    "loggingIn": "جارٍ تسجيل الدخول...",
+    "register": "إنشاء حساب",
+    "registerSubtitle": "انضم إلى BusExpress في أقل من دقيقة",
+    "registering": "جارٍ إنشاء الحساب...",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "phone": "الهاتف (اختياري)",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "noAccount": "ليس لديك حساب؟",
+    "haveAccount": "لديك حساب بالفعل؟",
+    "twoFactor": "التحقق بخطوتين",
+    "twoFactorCode": "رمز التحقق",
+    "twoFactorHelp": "أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة",
+    "verify": "تحقق",
+    "verifying": "جارٍ التحقق...",
+    "errorGeneric": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+  },
+  "account": {
+    "title": "حسابي",
+    "role": "الدور",
+    "phone": "الهاتف",
+    "twoFactor": "التحقق بخطوتين",
+    "enabled": "مفعّل",
+    "disabled": "معطّل",
+    "logout": "تسجيل الخروج"
   }
 }

@@ -9,5 +9,35 @@
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "loading": "Chargement..."
+  },
+  "auth": {
+    "login": "Connexion",
+    "loginSubtitle": "Entrez vos identifiants pour acceder a votre compte",
+    "loggingIn": "Connexion en cours...",
+    "register": "Creer un compte",
+    "registerSubtitle": "Rejoignez BusExpress en moins d'une minute",
+    "registering": "Creation du compte...",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "phone": "Telephone (optionnel)",
+    "forgotPassword": "Mot de passe oublie?",
+    "noAccount": "Pas encore de compte?",
+    "haveAccount": "Deja un compte?",
+    "twoFactor": "Verification en deux etapes",
+    "twoFactorCode": "Code de verification",
+    "twoFactorHelp": "Entrez le code a 6 chiffres affiche dans votre application d'authentification",
+    "verify": "Verifier",
+    "verifying": "Verification...",
+    "errorGeneric": "Une erreur est survenue. Veuillez reessayer."
+  },
+  "account": {
+    "title": "Mon compte",
+    "role": "Role",
+    "phone": "Telephone",
+    "twoFactor": "Verification en deux etapes",
+    "enabled": "Activee",
+    "disabled": "Desactivee",
+    "logout": "Se deconnecter"
   }
 }

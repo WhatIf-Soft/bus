@@ -143,6 +143,51 @@ func (r *postgresUserRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
+func (r *postgresUserRepo) CreateSession(ctx context.Context, s domain.Session) (domain.Session, error) {
+	query := `
+		INSERT INTO sessions (id, user_id, device_info, ip_address, created_at, last_active_at)
+		VALUES ($1, $2, $3, $4, $5, $5)
+		RETURNING id, user_id, device_info, ip_address, created_at, last_active_at, revoked_at`
+
+	id := s.ID
+	if id == uuid.Nil {
+		id = uuid.New()
+	}
+	now := time.Now().UTC()
+
+	var created domain.Session
+	err := r.pool.QueryRow(ctx, query, id, s.UserID, s.DeviceInfo, s.IPAddress, now).Scan(
+		&created.ID, &created.UserID, &created.DeviceInfo, &created.IPAddress,
+		&created.CreatedAt, &created.LastActiveAt, &created.RevokedAt,
+	)
+	if err != nil {
+		return domain.Session{}, fmt.Errorf("create session: %w", err)
+	}
+
+	return created, nil
+}
+
+func (r *postgresUserRepo) FindSessionByID(ctx context.Context, id uuid.UUID) (domain.Session, error) {
+	query := `
+		SELECT id, user_id, device_info, ip_address, created_at, last_active_at, revoked_at
+		FROM sessions
+		WHERE id = $1`
+
+	var s domain.Session
+	err := r.pool.QueryRow(ctx, query, id).Scan(
+		&s.ID, &s.UserID, &s.DeviceInfo, &s.IPAddress,
+		&s.CreatedAt, &s.LastActiveAt, &s.RevokedAt,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return domain.Session{}, domain.ErrSessionRevoked
+		}
+		return domain.Session{}, fmt.Errorf("find session: %w", err)
+	}
+
+	return s, nil
+}
+
 func (r *postgresUserRepo) ListSessions(ctx context.Context, userID uuid.UUID) ([]domain.Session, error) {
 	query := `
 		SELECT id, user_id, device_info, ip_address, created_at, last_active_at, revoked_at

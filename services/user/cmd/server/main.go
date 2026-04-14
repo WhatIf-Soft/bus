@@ -68,7 +68,13 @@ func runServe(_ *cobra.Command, _ []string) error {
 
 	// Build service layer.
 	userRepo := postgres.NewPostgresUserRepository(pool)
-	userSvc := service.NewUserService(userRepo, nil)
+	passengerRepo := postgres.NewPostgresSavedPassengerRepository(pool)
+	userSvc := service.NewUserService(userRepo, passengerRepo, nil, service.Config{
+		JWTSecret:  []byte(cfg.JWT.Secret),
+		TOTPIssuer: "BusExpress",
+	})
+
+	jwtSecret := []byte(cfg.JWT.Secret)
 
 	// Build router.
 	r := chi.NewRouter()
@@ -90,7 +96,7 @@ func runServe(_ *cobra.Command, _ []string) error {
 	))
 
 	// Register user routes.
-	userhttp.RegisterRoutes(r, userSvc)
+	userhttp.RegisterRoutes(r, userSvc, jwtSecret)
 
 	// Start HTTP server.
 	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
