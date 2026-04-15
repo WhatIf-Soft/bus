@@ -11,6 +11,7 @@ import {
   type Ticket,
 } from '@/lib/ticket-api';
 import { Button } from '@/components/ui/Button';
+import { ReviewForm } from '@/components/review/ReviewForm';
 
 interface PageProps {
   readonly params: Promise<{ locale: string; id: string }>;
@@ -212,6 +213,10 @@ export default function BookingDetailPage({ params }: PageProps) {
             {submitting ? 'Annulation…' : 'Annuler la réservation'}
           </Button>
         </div>
+      )}
+
+      {(booking.status === 'confirmed' || booking.status === 'used') && accessToken && (
+        <ReviewForm bookingId={booking.id} token={accessToken} />
       )}
     </main>
   );

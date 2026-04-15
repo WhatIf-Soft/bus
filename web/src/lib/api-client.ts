@@ -5,6 +5,8 @@ const SEARCH_API = process.env.SEARCH_API_URL || 'http://localhost:4002';
 const BOOKING_API = process.env.BOOKING_API_URL || 'http://localhost:4003';
 const PAYMENT_API = process.env.PAYMENT_API_URL || 'http://localhost:4004';
 const TICKET_API = process.env.TICKET_API_URL || 'http://localhost:4005';
+const OPERATOR_API = process.env.OPERATOR_API_URL || 'http://localhost:4007';
+const REVIEW_API = process.env.REVIEW_API_URL || 'http://localhost:4008';
 
 const CLIENT_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
@@ -32,6 +34,12 @@ function resolveUrl(endpoint: string): string {
     }
     if (endpoint.startsWith('/tickets/') || endpoint === '/tickets') {
       return `${TICKET_API}/api/v1${endpoint}`;
+    }
+    if (endpoint.startsWith('/operator/') || endpoint === '/operator') {
+      return `${OPERATOR_API}/api/v1${endpoint}`;
+    }
+    if (endpoint.startsWith('/reviews/') || endpoint === '/reviews' || endpoint.startsWith('/reviews?')) {
+      return `${REVIEW_API}/api/v1${endpoint}`;
     }
     return `${USER_API}/api/v1${endpoint}`;
   }
