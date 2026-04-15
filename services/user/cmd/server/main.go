@@ -96,7 +96,7 @@ func runServe(_ *cobra.Command, _ []string) error {
 	))
 
 	// Register user routes.
-	userhttp.RegisterRoutes(r, userSvc, jwtSecret)
+	userhttp.RegisterRoutes(r, userSvc, jwtSecret, pool)
 
 	// Start HTTP server.
 	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)

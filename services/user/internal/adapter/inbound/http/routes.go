@@ -2,15 +2,18 @@ package http
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/busexpress/pkg/auth"
 	"github.com/busexpress/services/user/internal/port"
 )
 
 // RegisterRoutes mounts all user-service HTTP routes onto the given chi router.
-// JWTMiddleware is applied to /me routes using the provided jwtSecret.
-func RegisterRoutes(r chi.Router, svc port.UserService, jwtSecret []byte) {
+// pool is used by the admin handler for direct DB queries that bypass the
+// service layer (admin operations are intentionally low-level).
+func RegisterRoutes(r chi.Router, svc port.UserService, jwtSecret []byte, pool *pgxpool.Pool) {
 	h := NewHandler(svc)
+	admin := NewAdminHandler(pool)
 
 	r.Route("/api/v1/users", func(r chi.Router) {
 		// Public routes
@@ -41,5 +44,14 @@ func RegisterRoutes(r chi.Router, svc port.UserService, jwtSecret []byte) {
 				r.Delete("/passengers/{id}", h.DeleteSavedPassenger)
 			})
 		})
+	})
+
+	// Admin back-office endpoints — admin role required.
+	r.Route("/api/v1/admin/users", func(r chi.Router) {
+		r.Use(auth.JWTMiddleware(jwtSecret))
+		r.Use(auth.RequireRole("admin"))
+
+		r.Get("/", admin.ListUsers)
+		r.Patch("/{id}", admin.PatchUser)
 	})
 }

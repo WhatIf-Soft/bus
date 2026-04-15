@@ -1,71 +1,66 @@
-# Prometheus configuration for BusExpress local development
-# Scrapes localhost services on common ports
+# Prometheus configuration for BusExpress local development.
+# Aligned with the actual port mapping used by each microservice.
 
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
 scrape_configs:
-  # Prometheus self-monitoring
   - job_name: "prometheus"
     static_configs:
       - targets: ["localhost:9090"]
 
-  # API Gateway
-  - job_name: "api-gateway"
-    metrics_path: /metrics
-    static_configs:
-      - targets: ["host.docker.internal:4000"]
-
-  # Search service
-  - job_name: "search-service"
+  - job_name: "user-service"
     metrics_path: /metrics
     static_configs:
       - targets: ["host.docker.internal:4001"]
 
-  # Booking service
-  - job_name: "booking-service"
+  - job_name: "search-service"
     metrics_path: /metrics
     static_configs:
       - targets: ["host.docker.internal:4002"]
 
-  # Payment service
-  - job_name: "payment-service"
+  - job_name: "booking-service"
     metrics_path: /metrics
     static_configs:
       - targets: ["host.docker.internal:4003"]
 
-  # Ticket service
-  - job_name: "ticket-service"
+  - job_name: "payment-service"
     metrics_path: /metrics
     static_configs:
       - targets: ["host.docker.internal:4004"]
 
-  # User service
-  - job_name: "user-service"
+  - job_name: "ticket-service"
     metrics_path: /metrics
     static_configs:
       - targets: ["host.docker.internal:4005"]
 
-  # Notification service
   - job_name: "notification-service"
     metrics_path: /metrics
     static_configs:
       - targets: ["host.docker.internal:4006"]
 
-  # GPS service
-  - job_name: "gps-service"
+  - job_name: "operator-service"
     metrics_path: /metrics
     static_configs:
       - targets: ["host.docker.internal:4007"]
 
-  # Operator service
-  - job_name: "operator-service"
+  - job_name: "review-service"
     metrics_path: /metrics
     static_configs:
       - targets: ["host.docker.internal:4008"]
 
-  # Node exporter (host metrics)
-  - job_name: "node-exporter"
+  - job_name: "waitlist-service"
+    metrics_path: /metrics
     static_configs:
-      - targets: ["host.docker.internal:9100"]
+      - targets: ["host.docker.internal:4009"]
+
+  - job_name: "support-service"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["host.docker.internal:4010"]
+
+  - job_name: "reconciliation-service"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["host.docker.internal:4011"]

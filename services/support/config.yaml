@@ -1,0 +1,12 @@
+server:
+  host: 0.0.0.0
+  port: 4010
+
+database:
+  dsn: postgres://busexpress:busexpress_dev@localhost:5433/busexpress_support?sslmode=disable
+
+jwt:
+  secret: dev-secret-change-me
+
+log:
+  level: info

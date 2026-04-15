@@ -22,6 +22,7 @@ const tabs = [
   { href: '/drivers', label: 'Conducteurs' },
   { href: '/policies', label: 'Politiques' },
   { href: '/reviews', label: 'Avis' },
+  { href: '/finance', label: 'Finances' },
 ];
 
 export default function OperatorLayout({ children }: OperatorLayoutProps) {

@@ -8,6 +8,8 @@ const TICKET_API = process.env.TICKET_API_URL || 'http://localhost:4005';
 const OPERATOR_API = process.env.OPERATOR_API_URL || 'http://localhost:4007';
 const REVIEW_API = process.env.REVIEW_API_URL || 'http://localhost:4008';
 const WAITLIST_API = process.env.WAITLIST_API_URL || 'http://localhost:4009';
+const SUPPORT_API = process.env.SUPPORT_API_URL || 'http://localhost:4010';
+const RECON_API = process.env.RECON_API_URL || 'http://localhost:4011';
 
 const CLIENT_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
@@ -44,6 +46,15 @@ function resolveUrl(endpoint: string): string {
     }
     if (endpoint.startsWith('/waitlist/') || endpoint === '/waitlist' || endpoint.startsWith('/waitlist?')) {
       return `${WAITLIST_API}/api/v1${endpoint}`;
+    }
+    if (endpoint.startsWith('/support/') || endpoint === '/support') {
+      return `${SUPPORT_API}/api/v1${endpoint}`;
+    }
+    if (endpoint.startsWith('/reconciliation/') || endpoint === '/reconciliation') {
+      return `${RECON_API}/api/v1${endpoint}`;
+    }
+    if (endpoint.startsWith('/admin/') || endpoint === '/admin') {
+      return `${USER_API}/api/v1${endpoint}`;
     }
     return `${USER_API}/api/v1${endpoint}`;
   }
