@@ -7,6 +7,7 @@ const PAYMENT_API = process.env.PAYMENT_API_URL || 'http://localhost:4004';
 const TICKET_API = process.env.TICKET_API_URL || 'http://localhost:4005';
 const OPERATOR_API = process.env.OPERATOR_API_URL || 'http://localhost:4007';
 const REVIEW_API = process.env.REVIEW_API_URL || 'http://localhost:4008';
+const WAITLIST_API = process.env.WAITLIST_API_URL || 'http://localhost:4009';
 
 const CLIENT_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
@@ -40,6 +41,9 @@ function resolveUrl(endpoint: string): string {
     }
     if (endpoint.startsWith('/reviews/') || endpoint === '/reviews' || endpoint.startsWith('/reviews?')) {
       return `${REVIEW_API}/api/v1${endpoint}`;
+    }
+    if (endpoint.startsWith('/waitlist/') || endpoint === '/waitlist' || endpoint.startsWith('/waitlist?')) {
+      return `${WAITLIST_API}/api/v1${endpoint}`;
     }
     return `${USER_API}/api/v1${endpoint}`;
   }

@@ -10,6 +10,7 @@ const PAYMENT_API = process.env.PAYMENT_API_URL || 'http://localhost:4004';
 const TICKET_API = process.env.TICKET_API_URL || 'http://localhost:4005';
 const OPERATOR_API = process.env.OPERATOR_API_URL || 'http://localhost:4007';
 const REVIEW_API = process.env.REVIEW_API_URL || 'http://localhost:4008';
+const WAITLIST_API = process.env.WAITLIST_API_URL || 'http://localhost:4009';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -27,6 +28,8 @@ const nextConfig: NextConfig = {
       { source: '/api/v1/operator/:path*', destination: `${OPERATOR_API}/api/v1/operator/:path*` },
       { source: '/api/v1/reviews/:path*', destination: `${REVIEW_API}/api/v1/reviews/:path*` },
       { source: '/api/v1/reviews', destination: `${REVIEW_API}/api/v1/reviews` },
+      { source: '/api/v1/waitlist/:path*', destination: `${WAITLIST_API}/api/v1/waitlist/:path*` },
+      { source: '/api/v1/waitlist', destination: `${WAITLIST_API}/api/v1/waitlist` },
     ];
   },
 };
