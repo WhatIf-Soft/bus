@@ -1,0 +1,24 @@
+server:
+  host: 0.0.0.0
+  port: 4001
+
+database:
+  dsn: postgres://busexpress:busexpress_dev@localhost:5433/busexpress_users?sslmode=disable
+
+redis:
+  addrs:
+    - localhost:6379
+    - localhost:6380
+    - localhost:6381
+
+kafka:
+  brokers:
+    - localhost:9092
+
+jwt:
+  secret: dev-secret-change-me
+  accessttl: 15m
+  refreshttl: 720h
+
+log:
+  level: info

@@ -1,0 +1,19 @@
+server:
+  host: 0.0.0.0
+  port: 4004
+
+database:
+  dsn: postgres://busexpress:busexpress_dev@localhost:5433/busexpress_payments?sslmode=disable
+
+redis:
+  addrs:
+    - localhost:6379
+
+booking:
+  url: http://localhost:4003
+
+jwt:
+  secret: dev-secret-change-me
+
+log:
+  level: info

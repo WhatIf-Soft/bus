@@ -1,0 +1,9 @@
+server:
+  host: 0.0.0.0
+  port: 4002
+
+database:
+  dsn: postgres://busexpress:busexpress_dev@localhost:5433/busexpress_search?sslmode=disable
+
+log:
+  level: info

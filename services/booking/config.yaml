@@ -1,0 +1,24 @@
+server:
+  host: 0.0.0.0
+  port: 4003
+
+database:
+  dsn: postgres://busexpress:busexpress_dev@localhost:5433/busexpress_bookings?sslmode=disable
+
+redis:
+  addrs:
+    - localhost:6379
+    - localhost:6380
+    - localhost:6381
+
+search:
+  url: http://localhost:4002
+
+jwt:
+  secret: dev-secret-change-me
+
+lock:
+  ttl: 10m
+
+log:
+  level: info

@@ -18,7 +18,7 @@ services:
     image: postgis/postgis:16-3.4
     container_name: busexpress-postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: busexpress
       POSTGRES_PASSWORD: busexpress_dev
