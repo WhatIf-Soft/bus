@@ -1,0 +1,60 @@
+{
+  "dashboard": {
+    "title": "BusExpress — Booking Funnel",
+    "uid": "busexpress-booking-funnel",
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Search → Booking → Payment → Ticket",
+        "type": "timeseries",
+        "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{job=\"search-service\",handler=~\"/api/v1/search/trips\"}[5m]))",
+            "legendFormat": "Search"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{job=\"booking-service\",status=\"201\"}[5m]))",
+            "legendFormat": "Booking Created"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{job=\"payment-service\",status=\"201\"}[5m]))",
+            "legendFormat": "Payment Initiated"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{job=\"ticket-service\",status=\"201\"}[5m]))",
+            "legendFormat": "Ticket Issued"
+          }
+        ]
+      },
+      {
+        "title": "Booking Success vs Conflict",
+        "type": "piechart",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 10 },
+        "targets": [
+          {
+            "expr": "sum(increase(http_requests_total{job=\"booking-service\",status=\"201\"}[1h]))",
+            "legendFormat": "201 Created"
+          },
+          {
+            "expr": "sum(increase(http_requests_total{job=\"booking-service\",status=\"409\"}[1h]))",
+            "legendFormat": "409 Conflict"
+          }
+        ]
+      },
+      {
+        "title": "Payment by Method",
+        "type": "piechart",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 10 },
+        "targets": [
+          {
+            "expr": "sum(increase(http_requests_total{job=\"payment-service\",status=\"201\"}[1h])) by (handler)",
+            "legendFormat": "{{handler}}"
+          }
+        ]
+      }
+    ],
+    "time": { "from": "now-6h", "to": "now" },
+    "refresh": "30s"
+  }
+}

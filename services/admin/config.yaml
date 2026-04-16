@@ -1,0 +1,15 @@
+server:
+  host: 0.0.0.0
+  port: 4012
+
+database:
+  dsn: postgres://busexpress:busexpress_dev@localhost:5433/busexpress_audit?sslmode=disable
+
+jwt:
+  secret: dev-secret-change-me
+
+hmac:
+  secret: dev-audit-hmac-chain-key
+
+log:
+  level: info

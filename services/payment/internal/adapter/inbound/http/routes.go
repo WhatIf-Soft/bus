@@ -23,5 +23,6 @@ func RegisterRoutes(r chi.Router, svc port.PaymentService, jwtSecret []byte, ide
 		r.Get("/{id}", h.Get)
 		r.Post("/{id}/cancel", h.Cancel)
 		r.Post("/{id}/refund", h.Refund)
+		r.Get("/{id}/invoice.pdf", h.Invoice)
 	})
 }
