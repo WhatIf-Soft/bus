@@ -8,6 +8,8 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/busexpress/pkg/events"
+	"github.com/busexpress/pkg/kafka"
 	"github.com/busexpress/pkg/redis"
 	"github.com/busexpress/services/booking/internal/domain"
 	"github.com/busexpress/services/booking/internal/port"
@@ -20,18 +22,35 @@ type Config struct {
 }
 
 type bookingService struct {
-	repo    port.BookingRepository
-	trips   port.TripClient
-	redlock *redis.Redlock
-	cfg     Config
+	repo     port.BookingRepository
+	trips    port.TripClient
+	redlock  *redis.Redlock
+	producer *kafka.Producer
+	cfg      Config
 }
 
 // NewBookingService wires the booking application service.
-func NewBookingService(repo port.BookingRepository, trips port.TripClient, redlock *redis.Redlock, cfg Config) port.BookingService {
+// producer may be nil if Kafka is not configured (dev mode).
+func NewBookingService(repo port.BookingRepository, trips port.TripClient, redlock *redis.Redlock, cfg Config, producer *kafka.Producer) port.BookingService {
 	if cfg.LockTTL == 0 {
 		cfg.LockTTL = 10 * time.Minute
 	}
-	return &bookingService{repo: repo, trips: trips, redlock: redlock, cfg: cfg}
+	return &bookingService{repo: repo, trips: trips, redlock: redlock, producer: producer, cfg: cfg}
+}
+
+func (s *bookingService) publishEvent(bookingID, userID, tripID uuid.UUID, status string, seats int) {
+	if s.producer == nil {
+		return
+	}
+	evt := events.BookingEvent{
+		BookingID: bookingID, UserID: userID, TripID: tripID,
+		Status: status, Seats: seats, Timestamp: time.Now().UTC(),
+	}
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_ = s.producer.Publish(ctx, events.TopicBookingEvents, bookingID.String(), events.Marshal(evt))
+	}()
 }
 
 // applyDiscount returns the price for a passenger after category discount.
@@ -119,6 +138,7 @@ func (s *bookingService) HoldSeats(ctx context.Context, req port.HoldSeatsReques
 		}
 		return nil, err
 	}
+	s.publishEvent(booking.ID, booking.UserID, booking.TripID, string(booking.Status), len(booking.Seats))
 	return booking, nil
 }
 
@@ -140,6 +160,7 @@ func (s *bookingService) Confirm(ctx context.Context, userID, bookingID uuid.UUI
 	b.Status = domain.StatusConfirmed
 	b.ConfirmedAt = &now
 	b.UpdatedAt = now
+	s.publishEvent(b.ID, b.UserID, b.TripID, string(b.Status), len(b.Seats))
 	return b, nil
 }
 
@@ -171,6 +192,7 @@ func (s *bookingService) Cancel(ctx context.Context, userID, bookingID uuid.UUID
 	b.Status = domain.StatusCancelled
 	b.CancelledAt = &now
 	b.UpdatedAt = now
+	s.publishEvent(b.ID, b.UserID, b.TripID, string(b.Status), len(b.Seats))
 	return b, nil
 }
 

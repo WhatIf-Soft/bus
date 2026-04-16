@@ -12,11 +12,16 @@ type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
 	Redis    RedisConfig
+	Kafka    KafkaConfig
 	Search   SearchConfig
 	Waitlist WaitlistConfig
 	JWT      JWTConfig
 	Lock     LockConfig
 	Log      LogConfig
+}
+
+type KafkaConfig struct {
+	Brokers []string
 }
 
 type ServerConfig struct {
@@ -65,6 +70,7 @@ func Load() (*Config, error) {
 	v.SetDefault("database.dsn",
 		"postgres://busexpress:busexpress_dev@localhost:5433/busexpress_bookings?sslmode=disable")
 	v.SetDefault("redis.addrs", []string{"localhost:6379", "localhost:6380", "localhost:6381"})
+	v.SetDefault("kafka.brokers", []string{})
 	v.SetDefault("search.url", "http://localhost:4002")
 	v.SetDefault("waitlist.url", "http://localhost:4009")
 	v.SetDefault("jwt.secret", "dev-secret-change-me")

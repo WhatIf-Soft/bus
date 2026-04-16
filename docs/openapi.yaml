@@ -1,0 +1,442 @@
+openapi: 3.0.3
+info:
+  title: BusExpress API
+  version: 1.0.0
+  description: |
+    Marketplace de réservation de bus en ligne pour l'Afrique de l'Ouest.
+    Tous les endpoints retournent un envelope JSON : `{ success, data, error, meta }`.
+  contact:
+    name: BusExpress Support
+    email: support@busexpress.dev
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development (via Next.js rewrites)
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    Envelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+
+paths:
+  # ── Search ──
+  /search/trips:
+    get:
+      summary: Search trips
+      tags: [Search]
+      security: []
+      parameters:
+        - name: origin
+          in: query
+          required: true
+          schema: { type: string }
+        - name: destination
+          in: query
+          required: true
+          schema: { type: string }
+        - name: date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: passengers
+          in: query
+          schema: { type: integer, default: 1, minimum: 1, maximum: 9 }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [recommended, price, duration, departure] }
+        - name: include_sold_out
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: List of matching trips
+
+  /search/autocomplete:
+    get:
+      summary: Autocomplete stops by prefix
+      tags: [Search]
+      security: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 2 }
+      responses:
+        '200':
+          description: Stop suggestions
+
+  /search/connections:
+    get:
+      summary: Find trips with one stopover
+      tags: [Search]
+      security: []
+      parameters:
+        - name: origin
+          in: query
+          required: true
+          schema: { type: string }
+        - name: destination
+          in: query
+          required: true
+          schema: { type: string }
+        - name: date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: passengers
+          in: query
+          schema: { type: integer, default: 1 }
+      responses:
+        '200':
+          description: Connection itineraries (2 legs each)
+
+  /search/alerts:
+    get:
+      summary: List my price alerts
+      tags: [Search, Price Alerts]
+      responses:
+        '200':
+          description: User's price alerts
+    post:
+      summary: Create a price alert
+      tags: [Search, Price Alerts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [origin_city, destination_city, max_price_cents]
+              properties:
+                origin_city: { type: string }
+                destination_city: { type: string }
+                max_price_cents: { type: integer }
+      responses:
+        '201':
+          description: Alert created
+
+  # ── Auth ──
+  /users/register:
+    post:
+      summary: Register a new user
+      tags: [Auth]
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+                phone: { type: string }
+      responses:
+        '201':
+          description: User created
+
+  /users/login:
+    post:
+      summary: Login
+      tags: [Auth]
+      security: []
+      responses:
+        '200':
+          description: Token pair returned
+
+  /users/password/reset-request:
+    post:
+      summary: Request password reset
+      tags: [Auth]
+      security: []
+      responses:
+        '200':
+          description: Reset email sent (if user exists)
+
+  /users/me:
+    get:
+      summary: Get my profile
+      tags: [User]
+      responses:
+        '200':
+          description: User profile
+
+  /users/me/loyalty:
+    get:
+      summary: Get loyalty point balance
+      tags: [User, Loyalty]
+      responses:
+        '200':
+          description: Points balance
+
+  /users/me/referral:
+    get:
+      summary: Get my referral code
+      tags: [User, Referral]
+      responses:
+        '200':
+          description: Referral code + stats
+
+  # ── Bookings ──
+  /bookings/:
+    post:
+      summary: Hold seats (create booking)
+      tags: [Booking]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [trip_id, seats]
+              properties:
+                trip_id: { type: string, format: uuid }
+                seats:
+                  type: array
+                  items:
+                    type: object
+                    required: [seat_number, first_name, last_name, category]
+                    properties:
+                      seat_number: { type: string }
+                      first_name: { type: string }
+                      last_name: { type: string }
+                      category: { type: string, enum: [adult, child, senior, student] }
+      responses:
+        '201':
+          description: Booking created with seat lock
+
+  # ── Payments ──
+  /payments/:
+    post:
+      summary: Initiate payment
+      tags: [Payment]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [booking_id, method]
+              properties:
+                booking_id: { type: string, format: uuid }
+                method: { type: string, enum: [card, orange_money, wave, mtn_momo, moov_money] }
+                card_token: { type: string }
+                msisdn: { type: string }
+      responses:
+        '201':
+          description: Payment created
+
+  /payments/{id}/invoice.pdf:
+    get:
+      summary: Download invoice PDF
+      tags: [Payment]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: PDF binary
+          content:
+            application/pdf: {}
+
+  /payments/{id}/refund:
+    post:
+      summary: Refund a succeeded payment
+      tags: [Payment]
+      responses:
+        '200':
+          description: Payment refunded
+
+  # ── Tickets ──
+  /tickets/:
+    post:
+      summary: Issue tickets for a confirmed booking
+      tags: [Ticket]
+      responses:
+        '201':
+          description: Tickets issued
+
+  /tickets/{id}/pdf:
+    get:
+      summary: Download ticket PDF with QR code
+      tags: [Ticket]
+      responses:
+        '200':
+          description: PDF binary
+
+  /tickets/{id}/transfer:
+    post:
+      summary: Transfer ticket to a new passenger
+      tags: [Ticket]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [new_passenger_name]
+              properties:
+                new_passenger_name: { type: string }
+      responses:
+        '200':
+          description: Ticket transferred
+
+  /tickets/validate:
+    post:
+      summary: Validate QR code (scan at boarding)
+      tags: [Ticket]
+      security: []
+      responses:
+        '200':
+          description: Ticket marked as used
+
+  # ── Operator ──
+  /operator/profile:
+    get:
+      summary: Get operator profile (auto-creates on first call)
+      tags: [Operator]
+      responses:
+        '200':
+          description: Operator profile
+
+  /operator/buses:
+    get:
+      summary: List operator's fleet
+      tags: [Operator]
+    post:
+      summary: Add a bus
+      tags: [Operator]
+
+  /operator/drivers:
+    get:
+      summary: List operator's drivers
+      tags: [Operator]
+    post:
+      summary: Add a driver
+      tags: [Operator]
+
+  /operator/agencies:
+    get:
+      summary: List sub-agencies
+      tags: [Operator, Agency]
+    post:
+      summary: Create a sub-agency
+      tags: [Operator, Agency]
+
+  # ── Reviews ──
+  /reviews:
+    get:
+      summary: List published reviews for an operator
+      tags: [Review]
+      security: []
+      parameters:
+        - name: operator_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+
+  /reviews/aggregate:
+    get:
+      summary: Rating aggregate for an operator
+      tags: [Review]
+      security: []
+
+  # ── Waitlist ──
+  /waitlist/:
+    post:
+      summary: Join waitlist for a sold-out trip
+      tags: [Waitlist]
+
+  /waitlist/mine:
+    get:
+      summary: List my waitlist entries
+      tags: [Waitlist]
+
+  # ── Support ──
+  /support/tickets/:
+    post:
+      summary: Create support ticket
+      tags: [Support]
+
+  /support/chat:
+    post:
+      summary: FAQ chatbot
+      tags: [Support]
+      security: []
+
+  # ── GPS ──
+  /gps/trips/{tripId}/position:
+    get:
+      summary: Get latest bus position for a trip
+      tags: [GPS]
+      security: []
+
+  # ── Reconciliation ──
+  /reconciliation/summary:
+    get:
+      summary: Payment summary with platform fee
+      tags: [Reconciliation]
+
+  # ── Audit ──
+  /audit/:
+    get:
+      summary: List audit events (admin only)
+      tags: [Audit]
+    post:
+      summary: Append audit event (internal)
+      tags: [Audit]
+      security: []
+
+  /audit/verify:
+    get:
+      summary: Verify HMAC chain integrity
+      tags: [Audit]
+
+  # ── Gateway (B2B) ──
+  /gateway/validate:
+    get:
+      summary: Validate a B2B API key
+      tags: [Gateway]
+      security:
+        - ApiKeyAuth: []
+
+  /gateway/keys:
+    get:
+      summary: List API keys (admin)
+      tags: [Gateway]
+    post:
+      summary: Create API key (admin)
+      tags: [Gateway]
+
+  # ── USSD ──
+  /ussd/callback:
+    post:
+      summary: Africa's Talking USSD callback
+      tags: [USSD]
+      security: []

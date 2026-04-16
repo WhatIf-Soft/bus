@@ -17,6 +17,7 @@ import (
 
 	"github.com/busexpress/pkg/health"
 	"github.com/busexpress/pkg/idempotency"
+	bxkafka "github.com/busexpress/pkg/kafka"
 	"github.com/busexpress/pkg/logging"
 	"github.com/busexpress/pkg/metrics"
 	"github.com/busexpress/pkg/middleware"
@@ -84,10 +85,18 @@ func runServe(_ *cobra.Command, _ []string) error {
 
 	repo := postgres.NewPostgresBookingRepository(pool)
 	tripClient := searchclient.NewClient(cfg.Search.URL)
+
+	// Kafka producer — nil-safe if brokers not configured.
+	var kafkaProducer *bxkafka.Producer
+	if len(cfg.Kafka.Brokers) > 0 {
+		kafkaProducer = bxkafka.NewProducer(cfg.Kafka.Brokers)
+		defer kafkaProducer.Close()
+	}
+
 	svc := service.NewBookingService(repo, tripClient, redlock, service.Config{
 		LockTTL:     cfg.Lock.TTL,
 		WaitlistURL: cfg.Waitlist.URL,
-	})
+	}, kafkaProducer)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
