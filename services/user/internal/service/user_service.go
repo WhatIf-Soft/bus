@@ -40,6 +40,7 @@ func (NoopPublisher) PublishUserDeleted(context.Context, uuid.UUID) error     { 
 // Config bundles the service-level dependencies injected from main.go.
 type Config struct {
 	JWTSecret   []byte
+	KeyPair     *auth.KeyPair // EdDSA keypair; if set, takes precedence over JWTSecret (HS256).
 	TOTPIssuer  string
 	TokensUntilExpiry time.Duration
 }
@@ -172,7 +173,12 @@ func (s *userService) issueTokens(ctx context.Context, user domain.User, meta po
 		return port.TokenPair{}, fmt.Errorf("issue tokens: create session: %w", err)
 	}
 
-	tokens, err := auth.GenerateTokenPair(user.ID.String(), string(user.Role), s.cfg.JWTSecret)
+	var tokens *auth.TokenPair
+	if s.cfg.KeyPair != nil {
+		tokens, err = auth.GenerateTokenPairRS256(user.ID.String(), string(user.Role), s.cfg.KeyPair.Private)
+	} else {
+		tokens, err = auth.GenerateTokenPair(user.ID.String(), string(user.Role), s.cfg.JWTSecret)
+	}
 	if err != nil {
 		return port.TokenPair{}, fmt.Errorf("issue tokens: generate: %w", err)
 	}
@@ -189,7 +195,13 @@ func (s *userService) issueTokens(ctx context.Context, user domain.User, meta po
 
 // RefreshToken validates the refresh token and issues a new pair (rotation).
 func (s *userService) RefreshToken(ctx context.Context, refreshToken string, meta port.SessionMeta) (port.TokenPair, error) {
-	claims, err := auth.ValidateToken(refreshToken, s.cfg.JWTSecret)
+	var claims *auth.Claims
+	var err error
+	if s.cfg.KeyPair != nil {
+		claims, err = auth.ValidateTokenEdDSA(refreshToken, s.cfg.KeyPair.Public)
+	} else {
+		claims, err = auth.ValidateToken(refreshToken, s.cfg.JWTSecret)
+	}
 	if err != nil {
 		return port.TokenPair{}, domain.ErrInvalidCredentials
 	}

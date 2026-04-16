@@ -21,6 +21,7 @@ import (
 
 	"github.com/busexpress/services/search/config"
 	searchhttp "github.com/busexpress/services/search/internal/adapter/inbound/http"
+	"github.com/busexpress/services/search/internal/adapter/outbound/elastic"
 	"github.com/busexpress/services/search/internal/adapter/outbound/postgres"
 	"github.com/busexpress/services/search/internal/service"
 )
@@ -66,6 +67,16 @@ func runServe(_ *cobra.Command, _ []string) error {
 
 	repo := postgres.NewPostgresSearchRepository(pool)
 	svc := service.NewSearchService(repo)
+
+	// ElasticSearch — optional. When configured, ensures index on startup.
+	if cfg.Elasticsearch.URL != "" {
+		esClient := elastic.NewClient(cfg.Elasticsearch.URL)
+		if err := esClient.EnsureIndex(context.Background()); err != nil {
+			logger.Warn().Err(err).Msg("elasticsearch index creation failed — falling back to Postgres")
+		} else {
+			logger.Info().Str("url", cfg.Elasticsearch.URL).Msg("elasticsearch connected")
+		}
+	}
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)

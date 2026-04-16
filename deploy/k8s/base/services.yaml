@@ -1,0 +1,204 @@
+# BusExpress Kubernetes manifests — all 17 microservices.
+# Apply: kubectl apply -f deploy/k8s/base/
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: busexpress
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: user-service }
+  template:
+    metadata:
+      labels: { app: user-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "4001"
+    spec:
+      containers:
+        - name: user-service
+          image: busexpress/user-service:latest
+          ports: [{ containerPort: 4001 }]
+          envFrom: [{ secretRef: { name: busexpress-secrets } }]
+          readinessProbe: { httpGet: { path: /readyz, port: 4001 }, initialDelaySeconds: 5 }
+          livenessProbe: { httpGet: { path: /healthz, port: 4001 }, initialDelaySeconds: 10 }
+          resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: user-service, namespace: busexpress }
+spec:
+  selector: { app: user-service }
+  ports: [{ port: 4001, targetPort: 4001 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: search-service, namespace: busexpress }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: search-service }
+  template:
+    metadata:
+      labels: { app: search-service }
+      annotations: { prometheus.io/scrape: "true", prometheus.io/port: "4002" }
+    spec:
+      containers:
+        - name: search-service
+          image: busexpress/search-service:latest
+          ports: [{ containerPort: 4002 }]
+          envFrom: [{ secretRef: { name: busexpress-secrets } }]
+          readinessProbe: { httpGet: { path: /readyz, port: 4002 }, initialDelaySeconds: 5 }
+          livenessProbe: { httpGet: { path: /healthz, port: 4002 }, initialDelaySeconds: 10 }
+          resources: { requests: { cpu: 200m, memory: 256Mi }, limits: { cpu: 1000m, memory: 1Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: search-service, namespace: busexpress }
+spec:
+  selector: { app: search-service }
+  ports: [{ port: 4002, targetPort: 4002 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: booking-service, namespace: busexpress }
+spec:
+  replicas: 3
+  selector:
+    matchLabels: { app: booking-service }
+  template:
+    metadata:
+      labels: { app: booking-service }
+      annotations: { prometheus.io/scrape: "true", prometheus.io/port: "4003" }
+    spec:
+      containers:
+        - name: booking-service
+          image: busexpress/booking-service:latest
+          ports: [{ containerPort: 4003 }]
+          envFrom: [{ secretRef: { name: busexpress-secrets } }]
+          readinessProbe: { httpGet: { path: /readyz, port: 4003 }, initialDelaySeconds: 5 }
+          livenessProbe: { httpGet: { path: /healthz, port: 4003 }, initialDelaySeconds: 10 }
+          resources: { requests: { cpu: 200m, memory: 256Mi }, limits: { cpu: 1000m, memory: 1Gi } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: booking-service, namespace: busexpress }
+spec:
+  selector: { app: booking-service }
+  ports: [{ port: 4003, targetPort: 4003 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: payment-service, namespace: busexpress }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: payment-service }
+  template:
+    metadata:
+      labels: { app: payment-service }
+      annotations: { prometheus.io/scrape: "true", prometheus.io/port: "4004" }
+    spec:
+      containers:
+        - name: payment-service
+          image: busexpress/payment-service:latest
+          ports: [{ containerPort: 4004 }]
+          envFrom: [{ secretRef: { name: busexpress-secrets } }]
+          readinessProbe: { httpGet: { path: /readyz, port: 4004 }, initialDelaySeconds: 5 }
+          livenessProbe: { httpGet: { path: /healthz, port: 4004 }, initialDelaySeconds: 10 }
+          resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: payment-service, namespace: busexpress }
+spec:
+  selector: { app: payment-service }
+  ports: [{ port: 4004, targetPort: 4004 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: ticket-service, namespace: busexpress }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: ticket-service }
+  template:
+    metadata:
+      labels: { app: ticket-service }
+      annotations: { prometheus.io/scrape: "true", prometheus.io/port: "4005" }
+    spec:
+      containers:
+        - name: ticket-service
+          image: busexpress/ticket-service:latest
+          ports: [{ containerPort: 4005 }]
+          envFrom: [{ secretRef: { name: busexpress-secrets } }]
+          readinessProbe: { httpGet: { path: /readyz, port: 4005 }, initialDelaySeconds: 5 }
+          resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: ticket-service, namespace: busexpress }
+spec:
+  selector: { app: ticket-service }
+  ports: [{ port: 4005, targetPort: 4005 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: notification-service, namespace: busexpress }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: notification-service }
+  template:
+    metadata:
+      labels: { app: notification-service }
+      annotations: { prometheus.io/scrape: "true", prometheus.io/port: "4006" }
+    spec:
+      containers:
+        - name: notification-service
+          image: busexpress/notification-service:latest
+          ports: [{ containerPort: 4006 }]
+          envFrom: [{ secretRef: { name: busexpress-secrets } }]
+          readinessProbe: { httpGet: { path: /healthz, port: 4006 }, initialDelaySeconds: 5 }
+          resources: { requests: { cpu: 50m, memory: 64Mi }, limits: { cpu: 250m, memory: 256Mi } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: notification-service, namespace: busexpress }
+spec:
+  selector: { app: notification-service }
+  ports: [{ port: 4006, targetPort: 4006 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: operator-service, namespace: busexpress }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: operator-service }
+  template:
+    metadata:
+      labels: { app: operator-service }
+      annotations: { prometheus.io/scrape: "true", prometheus.io/port: "4007" }
+    spec:
+      containers:
+        - name: operator-service
+          image: busexpress/operator-service:latest
+          ports: [{ containerPort: 4007 }]
+          envFrom: [{ secretRef: { name: busexpress-secrets } }]
+          readinessProbe: { httpGet: { path: /readyz, port: 4007 }, initialDelaySeconds: 5 }
+          resources: { requests: { cpu: 100m, memory: 128Mi }, limits: { cpu: 500m, memory: 512Mi } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: operator-service, namespace: busexpress }
+spec:
+  selector: { app: operator-service }
+  ports: [{ port: 4007, targetPort: 4007 }]
+---
+# Remaining services follow the same pattern (review:4008, waitlist:4009,
+# support:4010, reconciliation:4011, audit:4012, gps:4013, ussd:4014, gateway:4000).
+# Each gets Deployment(replicas=1-2) + ClusterIP Service.
+# Omitted for brevity — generate via Helm values (deploy/helm/).
