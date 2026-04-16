@@ -69,8 +69,11 @@ export function SeatMap({
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="flex w-full items-center justify-between text-xs text-[var(--color-text-muted)]">
-        <span>Conducteur</span>
         <span>{availableSeats} disponibles</span>
+      </div>
+      <div className="mb-1 flex w-full items-center justify-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+        <span aria-hidden>&#x1F68C;</span>
+        <span>Conducteur</span>
       </div>
       <div className="grid gap-2" role="grid" aria-label="Plan des sièges">
         {Array.from({ length: rows }).map((_, rowIdx) => {
@@ -89,10 +92,10 @@ export function SeatMap({
                 aria-label={`Siège ${label}${isTaken ? ' (occupé)' : ''}`}
                 aria-pressed={isSelected}
                 className={cn(
-                  'h-10 w-10 rounded-md border text-xs font-medium transition-colors',
+                  'h-10 w-10 rounded-lg border text-xs font-medium transition-colors',
                   isTaken && 'cursor-not-allowed bg-black/20 text-white/60',
                   !isTaken && !isSelected && 'border-black/20 hover:border-[var(--color-primary)]',
-                  isSelected && 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white',
+                  isSelected && 'animate-[seat-pulse_1.5s_ease-in-out] border-[var(--color-accent-warm)] bg-[var(--color-accent-warm)] text-white',
                 )}
               >
                 {label}
@@ -113,7 +116,7 @@ export function SeatMap({
       <div className="flex flex-wrap gap-3 text-xs text-[var(--color-text-muted)]">
         <Legend className="border-black/20" label="Disponible" />
         <Legend
-          className="border-[var(--color-primary)] bg-[var(--color-primary)]"
+          className="border-[var(--color-accent-warm)] bg-[var(--color-accent-warm)]"
           label="Sélectionné"
         />
         <Legend className="bg-black/20" label="Occupé" />

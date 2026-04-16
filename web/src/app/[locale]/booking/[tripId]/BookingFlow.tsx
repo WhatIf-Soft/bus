@@ -18,6 +18,9 @@ import {
 import { issueTickets } from '@/lib/ticket-api';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { StepIndicator } from '@/components/ui/StepIndicator';
+import { StickyBar } from '@/components/ui/StickyBar';
 import { SeatMap } from '@/components/booking/SeatMap';
 import { PassengerForm } from '@/components/booking/PassengerForm';
 import { LockTimer } from '@/components/booking/LockTimer';
@@ -32,6 +35,22 @@ interface BookingFlowProps {
 }
 
 type Step = 'select' | 'passengers' | 'pay' | 'wait_mm' | 'done';
+
+const STEP_LABELS = ['Si\u00e8ges', 'Passagers', 'Paiement', 'Confirmation'] as const;
+
+function stepToIndex(step: Step): number {
+  switch (step) {
+    case 'select':
+      return 0;
+    case 'passengers':
+      return 1;
+    case 'pay':
+    case 'wait_mm':
+      return 2;
+    case 'done':
+      return 3;
+  }
+}
 
 function newIdempotencyKey(): string {
   return crypto.randomUUID();
@@ -90,10 +109,9 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
             // tickets can be reissued from the booking detail page
           }
           setStep('done');
-          router.push(`/${locale}/account/bookings/${p.booking_id}`);
         } else if (p.status === 'failed' || p.status === 'cancelled') {
           clearInterval(id);
-          setError('Le paiement a échoué. Veuillez réessayer.');
+          setError('Le paiement a \u00e9chou\u00e9. Veuillez r\u00e9essayer.');
           setStep('pay');
         }
       } catch {
@@ -101,7 +119,7 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
       }
     }, 3000);
     return () => clearInterval(id);
-  }, [step, payment, accessToken, router, locale]);
+  }, [step, payment, accessToken]);
 
   const passengersComplete = useMemo(
     () =>
@@ -157,14 +175,13 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
           // tickets can be reissued from the booking detail page
         }
         setStep('done');
-        router.push(`/${locale}/account/bookings/${booking.id}`);
         return;
       }
       if (p.status === 'failed') {
-        setError(p.failure_reason ?? 'Le paiement a échoué.');
+        setError(p.failure_reason ?? 'Le paiement a \u00e9chou\u00e9.');
         return;
       }
-      // processing → mobile money waiting screen
+      // processing -> mobile money waiting screen
       setStep('wait_mm');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'erreur inconnue');
@@ -186,16 +203,18 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
   }
 
   if (!isAuthenticated) {
-    return <p>Redirection…</p>;
+    return <p>Redirection\u2026</p>;
   }
 
   return (
     <div className="flex flex-col gap-6">
+      <StepIndicator steps={[...STEP_LABELS]} currentStep={stepToIndex(step)} />
+
       {step === 'select' && (
         <>
-          <h2 className="text-xl font-semibold">1. Choisissez vos sièges</h2>
+          <h2 className="text-xl font-semibold">1. Choisissez vos si\u00e8ges</h2>
           <p className="text-sm text-[var(--color-text-muted)]">
-            Maximum 9 sièges par réservation.
+            Maximum 9 si\u00e8ges par r\u00e9servation.
           </p>
           <SeatMap
             tripId={trip.id}
@@ -204,11 +223,21 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
             maxSelection={9}
             onChange={setSeats}
           />
-          <div className="flex justify-end">
+          <div className="hidden justify-end md:flex">
             <Button onClick={() => setStep('passengers')} disabled={seats.length === 0}>
               Continuer ({seats.length})
             </Button>
           </div>
+          {seats.length > 0 && (
+            <StickyBar>
+              <Button
+                className="w-full"
+                onClick={() => setStep('passengers')}
+              >
+                {seats.length} si\u00e8ge(s) \u00b7 Continuer
+              </Button>
+            </StickyBar>
+          )}
         </>
       )}
 
@@ -223,10 +252,10 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
           )}
           <div className="flex justify-between">
             <Button variant="ghost" onClick={() => setStep('select')}>
-              ← Sièges
+              \u2190 Si\u00e8ges
             </Button>
             <Button onClick={holdSeats} disabled={!passengersComplete || submitting}>
-              {submitting ? 'Réservation…' : 'Réserver les sièges'}
+              {submitting ? 'R\u00e9servation\u2026' : 'R\u00e9server les si\u00e8ges'}
             </Button>
           </div>
         </>
@@ -234,12 +263,12 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
 
       {step === 'pay' && booking && (
         <>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3">
             <h2 className="text-xl font-semibold">3. Paiement</h2>
             <LockTimer
               expiresAt={booking.lock_expires_at}
               onExpire={() => {
-                setError('Votre réservation a expiré. Veuillez recommencer.');
+                setError('Votre r\u00e9servation a expir\u00e9. Veuillez recommencer.');
                 setStep('select');
                 setBooking(null);
               }}
@@ -269,10 +298,10 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
 
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setStep('passengers')}>
-              ← Modifier
+              \u2190 Modifier
             </Button>
             <Button onClick={pay} disabled={submitting}>
-              {submitting ? 'Paiement…' : 'Payer maintenant'}
+              {submitting ? 'Paiement\u2026' : 'Payer maintenant'}
             </Button>
           </div>
         </>
@@ -283,16 +312,16 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
           <h2 className="text-xl font-semibold">Confirmation Mobile Money</h2>
           <div className="rounded border border-amber-200 bg-amber-50 p-4 text-sm">
             <p>
-              Une demande de paiement a été envoyée au numéro{' '}
-              <strong>{payment.msisdn}</strong>. Approuvez le débit depuis votre téléphone.
+              Une demande de paiement a \u00e9t\u00e9 envoy\u00e9e au num\u00e9ro{' '}
+              <strong>{payment.msisdn}</strong>. Approuvez le d\u00e9bit depuis votre t\u00e9l\u00e9phone.
             </p>
             <p className="mt-2 text-xs text-amber-900">
-              Statut actuel : <code>{payment.status}</code>. La page se mettra à jour
+              Statut actuel : <code>{payment.status}</code>. La page se mettra \u00e0 jour
               automatiquement (toutes les 3 s).
             </p>
           </div>
           <div className="rounded border border-dashed border-black/20 p-3 text-xs">
-            <p className="mb-2 font-medium">🧪 Mode dev — simuler la réponse opérateur :</p>
+            <p className="mb-2 font-medium">&#x1F9EA; Mode dev \u2014 simuler la r\u00e9ponse op\u00e9rateur :</p>
             <div className="flex gap-2">
               <Button size="sm" onClick={() => devSimulateConfirm(true)} disabled={submitting}>
                 Approuver
@@ -308,6 +337,43 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
             </div>
           </div>
         </>
+      )}
+
+      {step === 'done' && (
+        <div className="flex flex-col items-center gap-6 py-8">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-[var(--color-accent-green)] bg-[var(--color-accent-green)]/10">
+            <svg
+              className="h-10 w-10 text-[var(--color-accent-green)]"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold">R\u00e9servation confirm\u00e9e !</h2>
+          {booking && (
+            <Badge variant="primary">{booking.id}</Badge>
+          )}
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            {booking && (
+              <>
+                <Button
+                  onClick={() => router.push(`/${locale}/account/bookings/${booking.id}`)}
+                >
+                  T\u00e9l\u00e9charger mes billets
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push(`/${locale}/account/bookings/${booking.id}`)}
+                >
+                  Voir ma r\u00e9servation
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

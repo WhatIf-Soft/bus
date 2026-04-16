@@ -32,17 +32,23 @@ export function LockTimer({ expiresAt, onExpire }: LockTimerProps) {
   }, [target, onExpire]);
 
   const warn = remaining <= 2 * 60 * 1000;
+
   return (
     <div
       role="timer"
       aria-live="polite"
       className={cn(
-        'inline-flex items-center gap-2 rounded-md px-3 py-1.5 font-mono text-sm tabular-nums',
-        warn ? 'bg-amber-100 text-amber-900' : 'bg-black/5 text-[var(--color-text)]',
+        'flex w-full items-center justify-between rounded-[var(--radius-lg)] px-4 py-2',
+        warn
+          ? 'animate-pulse border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/15 text-amber-900'
+          : 'border border-[var(--color-accent-warm)]/20 bg-[var(--color-accent-warm)]/10 text-[var(--color-accent-warm)]',
       )}
     >
-      <span aria-hidden>⏱</span>
-      Siège réservé · {formatRemaining(remaining)}
+      <span className="flex items-center gap-2 text-sm">
+        <span aria-hidden>&#x23F1;</span>
+        Si\u00e8ge r\u00e9serv\u00e9
+      </span>
+      <span className="font-mono text-sm tabular-nums">{formatRemaining(remaining)}</span>
     </div>
   );
 }

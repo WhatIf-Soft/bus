@@ -1,7 +1,10 @@
 'use client';
 
+import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import type { PassengerCategory, PassengerInput } from '@/lib/booking-api';
 import { Input } from '@/components/ui/Input';
+import { Badge } from '@/components/ui/Badge';
+import { cn } from '@/lib/cn';
 
 interface PassengerFormProps {
   readonly seats: ReadonlyArray<string>;
@@ -13,7 +16,7 @@ const CATEGORIES: ReadonlyArray<{ readonly value: PassengerCategory; readonly la
   { value: 'adult', label: 'Adulte' },
   { value: 'child', label: 'Enfant (2-11)' },
   { value: 'senior', label: 'Senior (60+)' },
-  { value: 'student', label: 'Étudiant' },
+  { value: 'student', label: '\u00c9tudiant' },
 ];
 
 export function PassengerForm({ seats, passengers, onChange }: PassengerFormProps) {
@@ -48,23 +51,40 @@ export function PassengerForm({ seats, passengers, onChange }: PassengerFormProp
                 required
               />
               <div className="flex flex-col gap-1.5">
-                <label className="text-[var(--text-small)] font-medium">Catégorie</label>
-                <select
+                <div className="flex items-center gap-2">
+                  <label className="text-[var(--text-small)] font-medium">Catégorie</label>
+                  {p.category === 'child' && (
+                    <Badge variant="gold">{'\u2212'}50%</Badge>
+                  )}
+                </div>
+                <ToggleGroup.Root
+                  type="single"
                   value={p.category}
-                  onChange={(e) =>
-                    update(idx, {
-                      category: e.target.value as PassengerCategory,
-                      seat_number: seat,
-                    })
-                  }
-                  className="h-10 rounded-[var(--radius-md)] border border-black/10 bg-transparent px-3"
+                  onValueChange={(value) => {
+                    if (value) {
+                      update(idx, {
+                        category: value as PassengerCategory,
+                        seat_number: seat,
+                      });
+                    }
+                  }}
+                  className="flex flex-wrap gap-1.5"
                 >
                   {CATEGORIES.map((c) => (
-                    <option key={c.value} value={c.value}>
+                    <ToggleGroup.Item
+                      key={c.value}
+                      value={c.value}
+                      className={cn(
+                        'px-3 py-1.5 text-[var(--text-xs)] font-medium transition-colors',
+                        p.category === c.value
+                          ? 'rounded-[var(--radius-full)] bg-[var(--color-accent-warm)] text-white'
+                          : 'rounded-[var(--radius-full)] border border-black/10 text-[var(--color-text-muted)]',
+                      )}
+                    >
                       {c.label}
-                    </option>
+                    </ToggleGroup.Item>
                   ))}
-                </select>
+                </ToggleGroup.Root>
               </div>
             </div>
           </fieldset>
