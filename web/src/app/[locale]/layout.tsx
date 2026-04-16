@@ -4,6 +4,9 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { QueryProvider } from '@/lib/query-provider';
+import { TooltipProvider } from '@/components/ui/Tooltip';
+import { ToastProvider } from '@/components/ui/Toast';
+import { PageShell } from '@/components/layout/PageShell';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -33,9 +36,11 @@ export default async function LocaleLayout({ children, params }: Props) {
       <body className="min-h-screen antialiased">
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>
-            <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              {children}
-            </main>
+            <TooltipProvider>
+              <ToastProvider>
+                <PageShell>{children}</PageShell>
+              </ToastProvider>
+            </TooltipProvider>
           </QueryProvider>
         </NextIntlClientProvider>
       </body>
