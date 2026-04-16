@@ -8,10 +8,15 @@ import (
 
 // Config holds all configuration for the search service.
 type Config struct {
-	Server   ServerConfig
-	Database DatabaseConfig
-	JWT      JWTConfig
-	Log      LogConfig
+	Server        ServerConfig
+	Database      DatabaseConfig
+	Elasticsearch ESConfig
+	JWT           JWTConfig
+	Log           LogConfig
+}
+
+type ESConfig struct {
+	URL string
 }
 
 // ServerConfig holds HTTP server settings.
@@ -46,6 +51,7 @@ func Load() (*Config, error) {
 	v.SetDefault("server.host", "0.0.0.0")
 	v.SetDefault("server.port", 4002)
 	v.SetDefault("database.dsn", "postgres://busexpress:busexpress_dev@localhost:5433/busexpress_search?sslmode=disable")
+	v.SetDefault("elasticsearch.url", "")
 	v.SetDefault("jwt.secret", "dev-secret-change-me")
 	v.SetDefault("log.level", "info")
 
