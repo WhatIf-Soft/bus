@@ -7,9 +7,11 @@ import (
 )
 
 type Config struct {
-	Server ServerConfig
-	SMTP   SMTPConfig
-	Log    LogConfig
+	Server   ServerConfig
+	SMTP     SMTPConfig
+	Twilio   TwilioConfig
+	WhatsApp WhatsAppConfig
+	Log      LogConfig
 }
 
 type ServerConfig struct {
@@ -20,6 +22,17 @@ type ServerConfig struct {
 type SMTPConfig struct {
 	Addr string
 	From string
+}
+
+type TwilioConfig struct {
+	AccountSID string `mapstructure:"account_sid"`
+	AuthToken  string `mapstructure:"auth_token"`
+	FromNumber string `mapstructure:"from_number"`
+}
+
+type WhatsAppConfig struct {
+	PhoneNumberID string `mapstructure:"phone_number_id"`
+	AccessToken   string `mapstructure:"access_token"`
 }
 
 type LogConfig struct {
@@ -37,6 +50,11 @@ func Load() (*Config, error) {
 	v.SetDefault("server.port", 4006)
 	v.SetDefault("smtp.addr", "localhost:1025")
 	v.SetDefault("smtp.from", "noreply@busexpress.dev")
+	v.SetDefault("twilio.account_sid", "")
+	v.SetDefault("twilio.auth_token", "")
+	v.SetDefault("twilio.from_number", "")
+	v.SetDefault("whatsapp.phone_number_id", "")
+	v.SetDefault("whatsapp.access_token", "")
 	v.SetDefault("log.level", "info")
 
 	if err := v.ReadInConfig(); err != nil {

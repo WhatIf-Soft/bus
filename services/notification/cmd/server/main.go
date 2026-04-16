@@ -59,6 +59,21 @@ func runServe(_ *cobra.Command, _ []string) error {
 	r.Post("/api/v1/notifications/email", notifhttp.EmailHandler(cfg.SMTP.Addr, cfg.SMTP.From))
 	r.Post("/api/v1/notifications/sms", notifhttp.SMSHandler())
 
+	// Twilio SMS (real provider — credentials from env).
+	twilioSMS := notifhttp.NewTwilioSMSHandler(
+		cfg.Twilio.AccountSID,
+		cfg.Twilio.AuthToken,
+		cfg.Twilio.FromNumber,
+	)
+	r.Post("/api/v1/notifications/sms/twilio", twilioSMS.SendSMS)
+
+	// WhatsApp via Meta Cloud API (template-based).
+	whatsapp := notifhttp.NewWhatsAppHandler(
+		cfg.WhatsApp.PhoneNumberID,
+		cfg.WhatsApp.AccessToken,
+	)
+	r.Post("/api/v1/notifications/whatsapp", whatsapp.Send)
+
 	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 	srv := &http.Server{
 		Addr: addr, Handler: r,

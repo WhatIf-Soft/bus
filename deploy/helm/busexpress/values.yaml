@@ -1,0 +1,120 @@
+# Default values for BusExpress Helm chart.
+# Override per environment: helm install -f values-prod.yaml busexpress .
+
+global:
+  image:
+    registry: busexpress
+    tag: latest
+    pullPolicy: IfNotPresent
+  namespace: busexpress
+
+# Each service is defined with sensible defaults.
+# Set enabled: false to skip deploying a service.
+services:
+  user:
+    enabled: true
+    port: 4001
+    replicas: 2
+    resources:
+      requests: { cpu: 100m, memory: 128Mi }
+      limits: { cpu: 500m, memory: 512Mi }
+
+  search:
+    enabled: true
+    port: 4002
+    replicas: 2
+    resources:
+      requests: { cpu: 200m, memory: 256Mi }
+      limits: { cpu: 1000m, memory: 1Gi }
+
+  booking:
+    enabled: true
+    port: 4003
+    replicas: 3
+    resources:
+      requests: { cpu: 200m, memory: 256Mi }
+      limits: { cpu: 1000m, memory: 1Gi }
+
+  payment:
+    enabled: true
+    port: 4004
+    replicas: 2
+    resources:
+      requests: { cpu: 100m, memory: 128Mi }
+      limits: { cpu: 500m, memory: 512Mi }
+
+  ticket:
+    enabled: true
+    port: 4005
+    replicas: 2
+    resources:
+      requests: { cpu: 100m, memory: 128Mi }
+      limits: { cpu: 500m, memory: 512Mi }
+
+  notification:
+    enabled: true
+    port: 4006
+    replicas: 1
+    resources:
+      requests: { cpu: 50m, memory: 64Mi }
+      limits: { cpu: 250m, memory: 256Mi }
+
+  operator:
+    enabled: true
+    port: 4007
+    replicas: 2
+
+  review:
+    enabled: true
+    port: 4008
+    replicas: 1
+
+  waitlist:
+    enabled: true
+    port: 4009
+    replicas: 1
+
+  support:
+    enabled: true
+    port: 4010
+    replicas: 1
+
+  reconciliation:
+    enabled: true
+    port: 4011
+    replicas: 1
+
+  audit:
+    enabled: true
+    port: 4012
+    replicas: 1
+
+  gps:
+    enabled: true
+    port: 4013
+    replicas: 1
+
+  ussd:
+    enabled: true
+    port: 4014
+    replicas: 1
+
+  gateway:
+    enabled: true
+    port: 4000
+    replicas: 2
+
+ingress:
+  enabled: true
+  host: api.busexpress.dev
+  tls: true
+  clusterIssuer: letsencrypt-prod
+
+secrets:
+  # In production, use external-secrets-operator or sealed-secrets.
+  # These values are for local/CI only.
+  jwtSecret: ""
+  dbHost: ""
+  dbPort: "5432"
+  dbUser: ""
+  dbPassword: ""
