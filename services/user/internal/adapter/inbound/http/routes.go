@@ -13,6 +13,7 @@ func RegisterRoutes(r chi.Router, svc port.UserService, jwtSecret []byte, pool *
 	h := NewHandler(svc)
 	admin := NewAdminHandler(pool)
 	loyalty := NewLoyaltyHandler(pool)
+	referral := NewReferralHandler(pool)
 
 	r.Route("/api/v1/users", func(r chi.Router) {
 		r.Post("/register", h.Register)
@@ -39,9 +40,11 @@ func RegisterRoutes(r chi.Router, svc port.UserService, jwtSecret []byte, pool *
 				r.Put("/passengers/{id}", h.UpdateSavedPassenger)
 				r.Delete("/passengers/{id}", h.DeleteSavedPassenger)
 
-				// Loyalty (CLAUDE.md §10 Phase 2 — fidélité)
 				r.Get("/loyalty", loyalty.GetBalance)
 				r.Get("/loyalty/history", loyalty.GetHistory)
+
+				r.Get("/referral", referral.GetCode)
+				r.Post("/referral/apply", referral.ApplyCode)
 			})
 		})
 	})

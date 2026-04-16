@@ -10,6 +10,10 @@ import (
 // RegisterRoutes mounts support-service routes onto the chi router.
 func RegisterRoutes(r chi.Router, svc port.SupportService, jwtSecret []byte) {
 	h := NewHandler(svc)
+	chatbot := NewChatbotHandler()
+
+	// Chatbot is public — no auth needed for FAQ queries.
+	r.Post("/api/v1/support/chat", chatbot.Chat)
 
 	r.Route("/api/v1/support/tickets", func(r chi.Router) {
 		r.Use(auth.JWTMiddleware(jwtSecret))
