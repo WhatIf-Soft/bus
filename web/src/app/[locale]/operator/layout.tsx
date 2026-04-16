@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import * as Tabs from '@radix-ui/react-tabs';
 import { useAuth } from '@/hooks/useAuth';
 
 interface OperatorLayoutProps {
@@ -23,7 +24,7 @@ const tabs = [
   { href: '/policies', label: 'Politiques' },
   { href: '/reviews', label: 'Avis' },
   { href: '/finance', label: 'Finances' },
-];
+] as const;
 
 export default function OperatorLayout({ children }: OperatorLayoutProps) {
   const router = useRouter();
@@ -47,34 +48,43 @@ export default function OperatorLayout({ children }: OperatorLayoutProps) {
   if (!isAuthenticated || (user && !isOperatorRole(user.role as unknown as string))) {
     return (
       <main className="mx-auto max-w-3xl p-4">
-        <p>Accès réservé aux opérateurs.</p>
+        <p>Acces reserve aux operateurs.</p>
       </main>
     );
   }
 
+  // Determine active tab value from pathname
+  const activeTab = tabs.find((t) => {
+    const fullHref = `${basePath}${t.href}`;
+    return pathname === fullHref;
+  })?.href ?? '';
+
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-6 p-4">
       <header className="flex flex-col gap-2 border-b border-black/10 pb-3">
-        <h1 className="text-2xl font-semibold tracking-tight">Portail opérateur</h1>
-        <nav aria-label="Sections" className="flex flex-wrap gap-2 text-sm">
-          {tabs.map((t) => {
-            const href = `${basePath}${t.href}`;
-            const active = pathname === href;
-            return (
-              <Link
+        <h1 className="text-2xl font-semibold tracking-tight">Portail operateur</h1>
+        <Tabs.Root value={activeTab}>
+          <Tabs.List aria-label="Sections" className="flex flex-wrap gap-1">
+            {tabs.map((t) => (
+              <Tabs.Trigger
                 key={t.href}
-                href={href}
-                className={`rounded border px-3 py-1.5 transition-colors ${
-                  active
-                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white'
-                    : 'border-black/10 hover:border-[var(--color-primary)]'
-                }`}
+                value={t.href}
+                asChild
               >
-                {t.label}
-              </Link>
-            );
-          })}
-        </nav>
+                <Link
+                  href={`${basePath}${t.href}`}
+                  className={`px-4 py-2 text-[var(--text-small)] transition-colors ${
+                    activeTab === t.href
+                      ? 'border-b-2 border-[var(--color-accent-warm)] text-[var(--color-accent-warm)] font-medium'
+                      : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
+                  }`}
+                >
+                  {t.label}
+                </Link>
+              </Tabs.Trigger>
+            ))}
+          </Tabs.List>
+        </Tabs.Root>
       </header>
       {children}
     </main>

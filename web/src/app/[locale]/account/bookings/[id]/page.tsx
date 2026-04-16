@@ -11,6 +11,7 @@ import {
   type Ticket,
 } from '@/lib/ticket-api';
 import { Button } from '@/components/ui/Button';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ReviewForm } from '@/components/review/ReviewForm';
 
 interface PageProps {
@@ -26,6 +27,81 @@ function formatPrice(cents: number, currency: string): string {
   }).format(cents / 100);
 }
 
+function StatusBanner({ status }: { readonly status: string }) {
+  const config = getStatusConfig(status);
+
+  return (
+    <div
+      className={`w-full rounded-[var(--radius-lg)] px-4 py-3 flex items-center gap-2 text-sm font-medium ${config.classes}`}
+    >
+      {config.icon}
+      <span>{config.label}</span>
+    </div>
+  );
+}
+
+function getStatusConfig(status: string): {
+  classes: string;
+  icon: React.ReactNode;
+  label: string;
+} {
+  switch (status) {
+    case 'confirmed':
+    case 'used':
+      return {
+        classes:
+          'bg-[var(--color-accent-green)]/10 text-[var(--color-accent-green)] border border-[var(--color-accent-green)]/20',
+        icon: (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        ),
+        label: status === 'confirmed' ? 'Réservation confirmée' : 'Billet utilisé',
+      };
+    case 'pending_payment':
+    case 'pending_seat':
+      return {
+        classes:
+          'bg-[var(--color-warning)]/10 text-amber-900 border border-[var(--color-warning)]/20',
+        icon: (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        ),
+        label:
+          status === 'pending_payment'
+            ? 'En attente de paiement'
+            : 'En attente de confirmation du siège',
+      };
+    case 'cancelled':
+    case 'expired':
+    case 'failed':
+      return {
+        classes:
+          'bg-[var(--color-error)]/10 text-[var(--color-error)] border border-[var(--color-error)]/20',
+        icon: (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        ),
+        label:
+          status === 'cancelled'
+            ? 'Réservation annulée'
+            : status === 'expired'
+              ? 'Réservation expirée'
+              : 'Paiement échoué',
+      };
+    default:
+      return {
+        classes: 'bg-black/5',
+        icon: null,
+        label: status,
+      };
+  }
+}
+
 export default function BookingDetailPage({ params }: PageProps) {
   const { locale, id } = use(params);
   const router = useRouter();
@@ -34,6 +110,7 @@ export default function BookingDetailPage({ params }: PageProps) {
   const [tickets, setTickets] = useState<ReadonlyArray<Ticket>>([]);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -96,6 +173,8 @@ export default function BookingDetailPage({ params }: PageProps) {
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-4 p-4">
+      <StatusBanner status={booking.status} />
+
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">Réservation</h1>
         <span className="rounded bg-black/5 px-2 py-0.5 text-xs">{booking.status}</span>
@@ -209,11 +288,21 @@ export default function BookingDetailPage({ params }: PageProps) {
 
       {cancellable && (
         <div className="flex justify-end">
-          <Button variant="destructive" onClick={onCancel} disabled={submitting}>
+          <Button variant="destructive" onClick={() => setConfirmOpen(true)} disabled={submitting}>
             {submitting ? 'Annulation…' : 'Annuler la réservation'}
           </Button>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Annuler la réservation"
+        description="Cette action est irréversible. Le remboursement sera effectué selon la politique de l'opérateur."
+        confirmLabel="Confirmer l'annulation"
+        onConfirm={onCancel}
+        destructive
+      />
 
       {(booking.status === 'confirmed' || booking.status === 'used') && accessToken && (
         <ReviewForm bookingId={booking.id} token={accessToken} />
