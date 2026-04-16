@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/Button';
 interface TripCardProps {
   readonly trip: Trip;
   readonly locale: string;
+  readonly passengers?: number;
+  readonly onJoinWaitlist?: (tripId: string) => void;
 }
 
 function formatTime(iso: string): string {
@@ -30,7 +32,8 @@ function formatPrice(cents: number, currency: string): string {
   }).format(value);
 }
 
-export function TripCard({ trip, locale }: TripCardProps) {
+export function TripCard({ trip, locale, passengers = 1, onJoinWaitlist }: TripCardProps) {
+  const soldOut = trip.available_seats < passengers;
   return (
     <article className="flex flex-col gap-3 rounded-[var(--radius-lg)] border border-black/5 bg-[var(--color-surface)] p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
       <div className="flex-1">
@@ -72,9 +75,19 @@ export function TripCard({ trip, locale }: TripCardProps) {
             {trip.available_seats} siège(s) disponibles
           </div>
         </div>
-        <Button asChild size="sm">
-          <Link href={`/${locale}/booking/${trip.id}`}>Réserver</Link>
-        </Button>
+        {soldOut ? (
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => onJoinWaitlist?.(trip.id)}
+          >
+            Liste d'attente
+          </Button>
+        ) : (
+          <Button asChild size="sm">
+            <Link href={`/${locale}/booking/${trip.id}`}>Réserver</Link>
+          </Button>
+        )}
       </div>
     </article>
   );

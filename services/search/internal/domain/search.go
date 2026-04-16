@@ -80,6 +80,7 @@ type SearchCriteria struct {
 	MaxPriceCents   *int
 	BusClass        *string
 	SortBy          string // "recommended" | "price" | "duration" | "departure"
+	IncludeSoldOut  bool
 	Limit           int
 	Offset          int
 }

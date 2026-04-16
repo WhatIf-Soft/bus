@@ -84,7 +84,10 @@ func runServe(_ *cobra.Command, _ []string) error {
 
 	repo := postgres.NewPostgresBookingRepository(pool)
 	tripClient := searchclient.NewClient(cfg.Search.URL)
-	svc := service.NewBookingService(repo, tripClient, redlock, service.Config{LockTTL: cfg.Lock.TTL})
+	svc := service.NewBookingService(repo, tripClient, redlock, service.Config{
+		LockTTL:     cfg.Lock.TTL,
+		WaitlistURL: cfg.Waitlist.URL,
+	})
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)

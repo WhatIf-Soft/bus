@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,7 +15,8 @@ import (
 
 // Config holds tunables for the booking service.
 type Config struct {
-	LockTTL time.Duration // Redlock TTL for seat locks (CLAUDE.md §5.1: 600s)
+	LockTTL      time.Duration // Redlock TTL for seat locks (CLAUDE.md §5.1: 600s)
+	WaitlistURL  string        // base URL of waitlist-service for cancel → fan-out
 }
 
 type bookingService struct {
@@ -159,10 +161,33 @@ func (s *bookingService) Cancel(ctx context.Context, userID, bookingID uuid.UUID
 		_ = s.redlock.Unlock(ctx, seatLockKey(b.TripID, seat.SeatNumber), b.ID.String())
 	}
 
+	// Best-effort waitlist fan-out (CLAUDE.md §7.5).
+	s.notifyWaitlist(b.TripID)
+
 	b.Status = domain.StatusCancelled
 	b.CancelledAt = &now
 	b.UpdatedAt = now
 	return b, nil
+}
+
+func (s *bookingService) notifyWaitlist(tripID uuid.UUID) {
+	if s.cfg.WaitlistURL == "" {
+		return
+	}
+	go func() {
+		url := fmt.Sprintf("%s/api/v1/waitlist/check?trip_id=%s", s.cfg.WaitlistURL, tripID)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, nil)
+		if err != nil {
+			return
+		}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return
+		}
+		_ = resp.Body.Close()
+	}()
 }
 
 func (s *bookingService) GetByID(ctx context.Context, userID, bookingID uuid.UUID) (*domain.Booking, error) {

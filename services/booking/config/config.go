@@ -13,6 +13,7 @@ type Config struct {
 	Database DatabaseConfig
 	Redis    RedisConfig
 	Search   SearchConfig
+	Waitlist WaitlistConfig
 	JWT      JWTConfig
 	Lock     LockConfig
 	Log      LogConfig
@@ -32,6 +33,10 @@ type RedisConfig struct {
 }
 
 type SearchConfig struct {
+	URL string
+}
+
+type WaitlistConfig struct {
 	URL string
 }
 
@@ -61,6 +66,7 @@ func Load() (*Config, error) {
 		"postgres://busexpress:busexpress_dev@localhost:5433/busexpress_bookings?sslmode=disable")
 	v.SetDefault("redis.addrs", []string{"localhost:6379", "localhost:6380", "localhost:6381"})
 	v.SetDefault("search.url", "http://localhost:4002")
+	v.SetDefault("waitlist.url", "http://localhost:4009")
 	v.SetDefault("jwt.secret", "dev-secret-change-me")
 	v.SetDefault("lock.ttl", 10*time.Minute)
 	v.SetDefault("log.level", "info")

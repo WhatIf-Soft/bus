@@ -52,16 +52,19 @@ func (r *searchRepo) SearchTrips(ctx context.Context, c domain.SearchCriteria) (
 		"t.departure_time >= $3",
 		"t.departure_time < $4",
 		"t.status = 'scheduled'",
-		"t.available_seats >= $5",
 	}
 	args := []any{
 		c.OriginCity,
 		c.DestinationCity,
 		c.DepartureDate,
 		c.DepartureDate.AddDate(0, 0, 1),
-		c.Passengers,
 	}
-	i := 6
+	i := 5
+	if !c.IncludeSoldOut {
+		where = append(where, fmt.Sprintf("t.available_seats >= $%d", i))
+		args = append(args, c.Passengers)
+		i++
+	}
 	if c.MaxPriceCents != nil {
 		where = append(where, fmt.Sprintf("t.price_cents <= $%d", i))
 		args = append(args, *c.MaxPriceCents)

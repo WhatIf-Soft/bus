@@ -50,6 +50,7 @@ func (h *Handler) SearchTrips(w http.ResponseWriter, r *http.Request) {
 		DepartureDate:   date,
 		Passengers:      passengers,
 		SortBy:          q.Get("sort"),
+		IncludeSoldOut:  q.Get("include_sold_out") == "true",
 		Limit:           parseInt(q.Get("limit"), 20),
 		Offset:          parseInt(q.Get("offset"), 0),
 	}
