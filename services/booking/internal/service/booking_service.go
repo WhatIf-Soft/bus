@@ -72,19 +72,21 @@ func (s *bookingService) HoldSeats(ctx context.Context, req port.HoldSeatsReques
 
 	// Sequential acquisition with rollback on partial failure.
 	acquired := make([]string, 0, len(req.Seats))
-	for _, sel := range req.Seats {
-		key := seatLockKey(req.TripID, sel.SeatNumber)
-		ok, lockErr := s.redlock.Lock(ctx, key, lockToken, s.cfg.LockTTL)
-		if lockErr != nil || !ok {
-			for _, k := range acquired {
-				_ = s.redlock.Unlock(ctx, k, lockToken)
+	if s.redlock != nil {
+		for _, sel := range req.Seats {
+			key := seatLockKey(req.TripID, sel.SeatNumber)
+			ok, lockErr := s.redlock.Lock(ctx, key, lockToken, s.cfg.LockTTL)
+			if lockErr != nil || !ok {
+				for _, k := range acquired {
+					_ = s.redlock.Unlock(ctx, k, lockToken)
+				}
+				if lockErr != nil {
+					return nil, fmt.Errorf("redlock acquire %s: %w", key, lockErr)
+				}
+				return nil, domain.ErrSeatUnavailable
 			}
-			if lockErr != nil {
-				return nil, fmt.Errorf("redlock acquire %s: %w", key, lockErr)
-			}
-			return nil, domain.ErrSeatUnavailable
+			acquired = append(acquired, key)
 		}
-		acquired = append(acquired, key)
 	}
 
 	now := time.Now().UTC()
@@ -157,8 +159,10 @@ func (s *bookingService) Cancel(ctx context.Context, userID, bookingID uuid.UUID
 		return nil, err
 	}
 
-	for _, seat := range b.Seats {
-		_ = s.redlock.Unlock(ctx, seatLockKey(b.TripID, seat.SeatNumber), b.ID.String())
+	if s.redlock != nil {
+		for _, seat := range b.Seats {
+			_ = s.redlock.Unlock(ctx, seatLockKey(b.TripID, seat.SeatNumber), b.ID.String())
+		}
 	}
 
 	// Best-effort waitlist fan-out (CLAUDE.md §7.5).
