@@ -1,0 +1,9 @@
+server:
+  host: 0.0.0.0
+  port: 4013
+
+database:
+  dsn: postgres://busexpress:busexpress_dev@localhost:5433/busexpress_gps?sslmode=disable
+
+log:
+  level: info
