@@ -71,6 +71,7 @@ func runServe(_ *cobra.Command, _ []string) error {
 	r.Use(middleware.RequestID)
 	r.Use(logging.HTTPMiddleware(logger))
 	r.Use(middleware.Recovery)
+	r.Use(middleware.SecureHeaders)
 	r.Use(middleware.CORS())
 	r.Use(middleware.RateLimit(middleware.DefaultRateLimitConfig()))
 	r.Use(middleware.Timeout(30 * time.Second))

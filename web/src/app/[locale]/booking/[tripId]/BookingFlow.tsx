@@ -12,7 +12,6 @@ import {
   initiatePayment,
   simulateWebhook,
   getPayment,
-  type CardInput,
   type Payment,
   type PaymentMethod,
 } from '@/lib/payment-api';
@@ -38,13 +37,7 @@ function newIdempotencyKey(): string {
   return crypto.randomUUID();
 }
 
-const EMPTY_CARD: CardInput = {
-  number: '',
-  exp_month: 0,
-  exp_year: 0,
-  cvc: '',
-  name: '',
-};
+const DEFAULT_CARD_TOKEN = 'tok_test_ok';
 
 export function BookingFlow({ trip, locale }: BookingFlowProps) {
   const router = useRouter();
@@ -55,7 +48,7 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
   const [passengers, setPassengers] = useState<ReadonlyArray<PassengerInput>>([]);
   const [booking, setBooking] = useState<Booking | null>(null);
   const [method, setMethod] = useState<PaymentMethod>('card');
-  const [card, setCard] = useState<CardInput>(EMPTY_CARD);
+  const [cardToken, setCardToken] = useState(DEFAULT_CARD_TOKEN);
   const [msisdn, setMsisdn] = useState('');
   const [payment, setPayment] = useState<Payment | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -149,7 +142,7 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
         {
           booking_id: booking.id,
           method,
-          card: method === 'card' ? card : undefined,
+          card_token: method === 'card' ? cardToken : undefined,
           msisdn: isMobileMoney(method) ? msisdn : undefined,
         },
         accessToken,
@@ -263,7 +256,7 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
           </div>
 
           {method === 'card' ? (
-            <CardForm value={card} onChange={setCard} />
+            <CardForm token={cardToken} onTokenChange={setCardToken} />
           ) : (
             <MobileMoneyForm value={msisdn} onChange={setMsisdn} />
           )}

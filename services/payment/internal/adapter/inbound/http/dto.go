@@ -6,21 +6,14 @@ import (
 	"github.com/busexpress/services/payment/internal/domain"
 )
 
-// CardInput is the optional card-method payload.
-type CardInput struct {
-	Number   string `json:"number"    validate:"required,min=12,max=24"`
-	ExpMonth int    `json:"exp_month" validate:"required,min=1,max=12"`
-	ExpYear  int    `json:"exp_year"  validate:"required,min=2024,max=2099"`
-	CVC      string `json:"cvc"       validate:"required,min=3,max=4"`
-	Name     string `json:"name"      validate:"required,min=1,max=100"`
-}
-
 // InitiatePaymentRequest is the body for POST /api/v1/payments.
+// Per CLAUDE.md §3.4, raw card data never reaches the server —
+// only a provider-minted token is accepted.
 type InitiatePaymentRequest struct {
-	BookingID string     `json:"booking_id" validate:"required,uuid"`
-	Method    string     `json:"method"     validate:"required,oneof=card orange_money wave mtn_momo moov_money"`
-	Card      *CardInput `json:"card,omitempty"`
-	MSISDN    *string    `json:"msisdn,omitempty" validate:"omitempty,e164"`
+	BookingID string  `json:"booking_id" validate:"required,uuid"`
+	Method    string  `json:"method"     validate:"required,oneof=card orange_money wave mtn_momo moov_money"`
+	CardToken *string `json:"card_token,omitempty" validate:"omitempty,min=4,max=200"`
+	MSISDN    *string `json:"msisdn,omitempty" validate:"omitempty,e164"`
 }
 
 // WebhookRequest is the body for POST /api/v1/payments/{id}/webhook.

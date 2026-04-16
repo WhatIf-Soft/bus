@@ -3,7 +3,6 @@ package gateway
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/google/uuid"
 
@@ -13,9 +12,13 @@ import (
 
 // MockGateway simulates Stripe and Mobile Money behaviour without external calls.
 //
-//   - Card method: succeeds immediately UNLESS card number is "4000000000000002"
-//     (Stripe's "always declined" test card).
-//   - Mobile money methods: returns Processing — operator must confirm via webhook.
+// Card tokens:
+//   - `tok_test_ok`       → succeeded
+//   - `tok_test_decline`  → failed (card_declined)
+//   - anything else       → succeeded (dev-friendly default)
+//
+// Mobile money methods always return Processing — the operator must confirm
+// via the /payments/{id}/webhook endpoint.
 type MockGateway struct{}
 
 // NewMockGateway returns a deterministic in-process gateway suitable for dev/tests.
@@ -23,16 +26,15 @@ func NewMockGateway() port.PaymentGateway {
 	return &MockGateway{}
 }
 
-func (g *MockGateway) Charge(_ context.Context, p *domain.Payment, card *port.CardDetails) (*port.GatewayResult, error) {
+func (g *MockGateway) Charge(_ context.Context, p *domain.Payment, cardToken *string) (*port.GatewayResult, error) {
 	if p.Method == domain.MethodCard {
-		if card == nil {
+		if cardToken == nil || *cardToken == "" {
 			return &port.GatewayResult{
 				Status:        domain.StatusFailed,
-				FailureReason: "card details required",
+				FailureReason: "card_token required",
 			}, nil
 		}
-		number := strings.ReplaceAll(card.Number, " ", "")
-		if number == "4000000000000002" {
+		if *cardToken == "tok_test_decline" {
 			return &port.GatewayResult{
 				Status:        domain.StatusFailed,
 				FailureReason: "card_declined",
@@ -44,7 +46,6 @@ func (g *MockGateway) Charge(_ context.Context, p *domain.Payment, card *port.Ca
 		}, nil
 	}
 
-	// Mobile money: pending until webhook arrives.
 	if p.Method.IsMobileMoney() {
 		if p.MSISDN == nil || *p.MSISDN == "" {
 			return &port.GatewayResult{
@@ -61,5 +62,13 @@ func (g *MockGateway) Charge(_ context.Context, p *domain.Payment, card *port.Ca
 	return &port.GatewayResult{
 		Status:        domain.StatusFailed,
 		FailureReason: "unsupported method",
+	}, nil
+}
+
+// Refund simulates a provider refund — always succeeds in dev.
+func (g *MockGateway) Refund(_ context.Context, _ *domain.Payment) (*port.GatewayResult, error) {
+	return &port.GatewayResult{
+		Status:      domain.StatusRefunded,
+		ExternalRef: fmt.Sprintf("refund_%s", uuid.New().String()),
 	}, nil
 }

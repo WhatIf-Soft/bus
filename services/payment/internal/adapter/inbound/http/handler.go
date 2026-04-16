@@ -70,24 +70,13 @@ func (h *Handler) Initiate(w http.ResponseWriter, r *http.Request) {
 	}
 	method := domain.Method(req.Method)
 
-	if method == domain.MethodCard && req.Card == nil {
-		response.Error(w, apperrors.NewValidation("card details required for card method"))
+	if method == domain.MethodCard && (req.CardToken == nil || *req.CardToken == "") {
+		response.Error(w, apperrors.NewValidation("card_token required for card method"))
 		return
 	}
 	if method.IsMobileMoney() && (req.MSISDN == nil || *req.MSISDN == "") {
 		response.Error(w, apperrors.NewValidation("msisdn required for mobile money"))
 		return
-	}
-
-	var card *port.CardDetails
-	if req.Card != nil {
-		card = &port.CardDetails{
-			Number:   req.Card.Number,
-			ExpMonth: req.Card.ExpMonth,
-			ExpYear:  req.Card.ExpYear,
-			CVC:      req.Card.CVC,
-			Name:     req.Card.Name,
-		}
 	}
 
 	ctx := service.WithBearerToken(r.Context(), bearerToken(r))
@@ -96,7 +85,7 @@ func (h *Handler) Initiate(w http.ResponseWriter, r *http.Request) {
 		UserID:    userID,
 		BookingID: bookingID,
 		Method:    method,
-		Card:      card,
+		CardToken: req.CardToken,
 		MSISDN:    req.MSISDN,
 	})
 	if err != nil {
@@ -186,6 +175,29 @@ func (h *Handler) Webhook(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := service.WithBearerToken(r.Context(), bearerToken(r))
 	p, err := h.service.HandleWebhook(ctx, id, req.Success, req.ExternalRef, req.FailureReason)
+	if err != nil {
+		mapError(w, err)
+		return
+	}
+	response.JSON(w, http.StatusOK, toPaymentResponse(p))
+}
+
+// Refund handles POST /api/v1/payments/{id}/refund.
+func (h *Handler) Refund(w http.ResponseWriter, r *http.Request) {
+	userID, err := userIDFromCtx(r)
+	if err != nil {
+		response.Error(w, apperrors.NewUnauthorized("invalid token"))
+		return
+	}
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		response.Error(w, apperrors.NewValidation("invalid payment id"))
+		return
+	}
+	claims, _ := auth.ClaimsFromContext(r.Context())
+	isAdmin := claims != nil && (claims.Role == "admin" || claims.Role == "agent_support")
+	ctx := service.WithBearerToken(r.Context(), bearerToken(r))
+	p, err := h.service.Refund(ctx, userID, id, isAdmin)
 	if err != nil {
 		mapError(w, err)
 		return

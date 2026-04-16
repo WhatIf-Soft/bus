@@ -18,5 +18,7 @@ type GatewayResult struct {
 
 // PaymentGateway abstracts a payment provider (Stripe, Orange Money, etc.).
 type PaymentGateway interface {
-	Charge(ctx context.Context, p *domain.Payment, card *CardDetails) (*GatewayResult, error)
+	Charge(ctx context.Context, p *domain.Payment, cardToken *string) (*GatewayResult, error)
+	// Refund issues a refund against a prior succeeded transaction.
+	Refund(ctx context.Context, p *domain.Payment) (*GatewayResult, error)
 }

@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/busexpress/pkg/auth"
 	"github.com/busexpress/pkg/response"
 
 	apperrors "github.com/busexpress/pkg/errors"
@@ -71,11 +72,14 @@ func RateLimit(cfg RateLimitConfig) func(http.Handler) http.Handler {
 			ip := r.RemoteAddr
 
 			rate := float64(cfg.AnonRate)
-			if r.Header.Get("Authorization") != "" {
+			key := "ip:" + ip
+
+			if claims, err := auth.ClaimsFromContext(r.Context()); err == nil && claims != nil {
+				rate = float64(cfg.AuthRate)
+				key = "user:" + claims.UserID
+			} else if r.Header.Get("Authorization") != "" {
 				rate = float64(cfg.AuthRate)
 			}
-
-			key := ip
 
 			val, _ := buckets.LoadOrStore(key, &bucket{
 				tokens:    rate,

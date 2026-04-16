@@ -25,18 +25,10 @@ export interface Payment {
   readonly completed_at?: string | null;
 }
 
-export interface CardInput {
-  readonly number: string;
-  readonly exp_month: number;
-  readonly exp_year: number;
-  readonly cvc: string;
-  readonly name: string;
-}
-
 export interface InitiatePaymentPayload {
   readonly booking_id: string;
   readonly method: PaymentMethod;
-  readonly card?: CardInput;
+  readonly card_token?: string;
   readonly msisdn?: string;
 }
 

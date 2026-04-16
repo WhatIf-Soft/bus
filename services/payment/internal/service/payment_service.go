@@ -73,7 +73,7 @@ func (s *paymentService) Initiate(ctx context.Context, req port.InitiatePaymentR
 		return nil, err
 	}
 
-	result, err := s.gateway.Charge(ctx, p, req.Card)
+	result, err := s.gateway.Charge(ctx, p, req.CardToken)
 	if err != nil {
 		_ = s.repo.UpdateStatus(ctx, p.ID, domain.StatusFailed, nil, ptr(err.Error()), ptrTime(now))
 		p.Status = domain.StatusFailed
@@ -184,6 +184,42 @@ func (s *paymentService) Cancel(ctx context.Context, userID, paymentID uuid.UUID
 	}
 	p.Status = domain.StatusCancelled
 	p.CompletedAt = &now
+	return p, nil
+}
+
+func (s *paymentService) Refund(ctx context.Context, requesterID, paymentID uuid.UUID, isAdmin bool) (*domain.Payment, error) {
+	p, err := s.repo.GetByID(ctx, paymentID)
+	if err != nil {
+		return nil, err
+	}
+	if !isAdmin && p.UserID != requesterID {
+		return nil, domain.ErrNotOwner
+	}
+	if p.Status != domain.StatusSucceeded {
+		return nil, fmt.Errorf("%w: can only refund succeeded payments (current: %s)", domain.ErrInvalidStatus, p.Status)
+	}
+
+	result, err := s.gateway.Refund(ctx, p)
+	if err != nil {
+		return nil, fmt.Errorf("gateway refund: %w", err)
+	}
+
+	now := time.Now().UTC()
+	var extPtr *string
+	if result.ExternalRef != "" {
+		extPtr = &result.ExternalRef
+	}
+	if err := s.repo.UpdateStatus(ctx, p.ID, domain.StatusRefunded, extPtr, nil, &now); err != nil {
+		return nil, err
+	}
+	p.Status = domain.StatusRefunded
+	p.ExternalRef = extPtr
+	p.CompletedAt = &now
+
+	token := BearerTokenFromContext(ctx)
+	if token != "" {
+		_ = s.bookings.Cancel(ctx, token, p.BookingID)
+	}
 	return p, nil
 }
 
