@@ -1,0 +1,221 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - main [ref=e3]:
+      - navigation "Breadcrumb" [ref=e4]:
+        - list [ref=e5]:
+          - listitem [ref=e6]:
+            - link "Accueil" [ref=e7] [cursor=pointer]:
+              - /url: /fr
+          - listitem [ref=e8]: ">"
+          - listitem [ref=e9]:
+            - link "Recherche" [ref=e10] [cursor=pointer]:
+              - /url: /fr/search
+          - listitem [ref=e11]: ">"
+          - listitem [ref=e12]: Abidjan → Accra
+      - form "Trip search" [ref=e13]:
+        - generic [ref=e14]:
+          - generic [ref=e15]: Origine
+          - textbox "Origine" [ref=e16]:
+            - /placeholder: Abidjan
+            - text: Abidjan
+        - generic [ref=e17]:
+          - generic [ref=e18]: Destination
+          - textbox "Destination" [ref=e19]:
+            - /placeholder: Yamoussoukro
+            - text: Accra
+        - generic [ref=e20]:
+          - generic [ref=e21]: Date
+          - textbox "Date" [ref=e22]: 2026-04-20
+        - generic [ref=e23]:
+          - generic [ref=e24]: Passagers
+          - spinbutton "Passagers" [ref=e25]: "2"
+        - button "Rechercher" [ref=e27]
+      - region "Résultats de recherche" [ref=e28]:
+        - generic [ref=e29]:
+          - generic [ref=e30]: 5 trajet(s) trouvé(s)
+          - link "Recommandé" [ref=e31] [cursor=pointer]:
+            - /url: /fr/search?origin=Abidjan&destination=Accra&date=2026-04-20&passengers=2&sort=recommended
+          - link "Prix" [ref=e32] [cursor=pointer]:
+            - /url: /fr/search?origin=Abidjan&destination=Accra&date=2026-04-20&passengers=2&sort=price
+          - link "Durée" [ref=e33] [cursor=pointer]:
+            - /url: /fr/search?origin=Abidjan&destination=Accra&date=2026-04-20&passengers=2&sort=duration
+          - link "Départ" [ref=e34] [cursor=pointer]:
+            - /url: /fr/search?origin=Abidjan&destination=Accra&date=2026-04-20&passengers=2&sort=departure
+        - generic [ref=e35]:
+          - article [ref=e36]:
+            - generic [ref=e37]:
+              - generic [ref=e38]:
+                - generic [ref=e39]:
+                  - generic [ref=e40]: 07:00
+                  - generic [ref=e41]: → 17:00
+                - generic [ref=e42]: 10h
+              - generic [ref=e43]:
+                - generic [ref=e44]:
+                  - generic [ref=e45]: Abidjan
+                  - img [ref=e47]
+                  - generic [ref=e53]: Accra
+                - generic [ref=e54]:
+                  - img "Africa Trans" [ref=e55]: AT
+                  - generic [ref=e56]: Africa Trans
+                  - generic "Note 4.2" [ref=e57]: ★ 4.2
+                - generic [ref=e59]: ac
+              - generic [ref=e60]:
+                - generic [ref=e61]: 13 800 F CFA
+                - generic [ref=e62]: 42 sièges
+                - link "Réserver" [ref=e63] [cursor=pointer]:
+                  - /url: /fr/booking/5364d459-9d79-4897-b1e6-ab2fd9227f74
+          - article [ref=e64]:
+            - generic [ref=e65]:
+              - generic [ref=e66]:
+                - generic [ref=e67]:
+                  - generic [ref=e68]: 11:00
+                  - generic [ref=e69]: → 21:00
+                - generic [ref=e70]: 10h
+              - generic [ref=e71]:
+                - generic [ref=e72]:
+                  - generic [ref=e73]: Abidjan
+                  - img [ref=e75]
+                  - generic [ref=e81]: Accra
+                - generic [ref=e82]:
+                  - img "Africa Trans" [ref=e83]: AT
+                  - generic [ref=e84]: Africa Trans
+                  - generic "Note 4.2" [ref=e85]: ★ 4.2
+                - generic [ref=e87]: ac
+              - generic [ref=e88]:
+                - generic [ref=e89]: 13 800 F CFA
+                - generic [ref=e90]: 37 sièges
+                - link "Réserver" [ref=e91] [cursor=pointer]:
+                  - /url: /fr/booking/eaa9b715-acc2-4f20-893a-1ed7e220a189
+          - article [ref=e92]:
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - generic [ref=e95]:
+                  - generic [ref=e96]: 15:00
+                  - generic [ref=e97]: → 01:00
+                - generic [ref=e98]: 10h
+              - generic [ref=e99]:
+                - generic [ref=e100]:
+                  - generic [ref=e101]: Abidjan
+                  - img [ref=e103]
+                  - generic [ref=e109]: Accra
+                - generic [ref=e110]:
+                  - img "Africa Trans" [ref=e111]: AT
+                  - generic [ref=e112]: Africa Trans
+                  - generic "Note 4.2" [ref=e113]: ★ 4.2
+                - generic [ref=e115]: ac
+              - generic [ref=e116]:
+                - generic [ref=e117]: 13 800 F CFA
+                - generic [ref=e118]: 30 sièges
+                - link "Réserver" [ref=e119] [cursor=pointer]:
+                  - /url: /fr/booking/8b287a6e-c9a1-4ac5-851e-281b6f301c9c
+          - article [ref=e120]:
+            - generic [ref=e121]:
+              - generic [ref=e122]:
+                - generic [ref=e123]:
+                  - generic [ref=e124]: 19:00
+                  - generic [ref=e125]: → 05:00
+                - generic [ref=e126]: 10h
+              - generic [ref=e127]:
+                - generic [ref=e128]:
+                  - generic [ref=e129]: Abidjan
+                  - img [ref=e131]
+                  - generic [ref=e137]: Accra
+                - generic [ref=e138]:
+                  - img "Africa Trans" [ref=e139]: AT
+                  - generic [ref=e140]: Africa Trans
+                  - generic "Note 4.2" [ref=e141]: ★ 4.2
+                - generic [ref=e143]: ac
+              - generic [ref=e144]:
+                - generic [ref=e145]: 13 800 F CFA
+                - generic [ref=e146]: 38 sièges
+                - link "Réserver" [ref=e147] [cursor=pointer]:
+                  - /url: /fr/booking/b1c7e5a0-a80e-41e7-94b2-0ca2ef9d55b7
+          - article [ref=e148]:
+            - generic [ref=e149]:
+              - generic [ref=e150]:
+                - generic [ref=e151]:
+                  - generic [ref=e152]: 23:00
+                  - generic [ref=e153]: → 09:00
+                - generic [ref=e154]: 10h
+              - generic [ref=e155]:
+                - generic [ref=e156]:
+                  - generic [ref=e157]: Abidjan
+                  - img [ref=e159]
+                  - generic [ref=e165]: Accra
+                - generic [ref=e166]:
+                  - img "Africa Trans" [ref=e167]: AT
+                  - generic [ref=e168]: Africa Trans
+                  - generic "Note 4.2" [ref=e169]: ★ 4.2
+                - generic [ref=e171]: ac
+              - generic [ref=e172]:
+                - generic [ref=e173]: 13 800 F CFA
+                - generic [ref=e174]: 47 sièges
+                - link "Réserver" [ref=e175] [cursor=pointer]:
+                  - /url: /fr/booking/b150e586-fe24-4716-ad45-628eb9ece691
+  - contentinfo [ref=e176]:
+    - generic [ref=e177]:
+      - generic [ref=e179]:
+        - generic [ref=e180]:
+          - heading "Entreprise" [level=3] [ref=e181]
+          - list [ref=e182]:
+            - listitem [ref=e183]:
+              - link "À propos" [ref=e184] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e185]:
+              - link "Carrières" [ref=e186] [cursor=pointer]:
+                - /url: /careers
+        - generic [ref=e187]:
+          - heading "Voyageurs" [level=3] [ref=e188]
+          - list [ref=e189]:
+            - listitem [ref=e190]:
+              - link "FAQ" [ref=e191] [cursor=pointer]:
+                - /url: /faq
+            - listitem [ref=e192]:
+              - link "Support" [ref=e193] [cursor=pointer]:
+                - /url: /account/support
+            - listitem [ref=e194]:
+              - link "Fidélité" [ref=e195] [cursor=pointer]:
+                - /url: /loyalty
+        - generic [ref=e196]:
+          - heading "Opérateurs" [level=3] [ref=e197]
+          - list [ref=e198]:
+            - listitem [ref=e199]:
+              - link "Portail opérateur" [ref=e200] [cursor=pointer]:
+                - /url: /operator
+            - listitem [ref=e201]:
+              - link "S'inscrire" [ref=e202] [cursor=pointer]:
+                - /url: /operator/register
+        - generic [ref=e203]:
+          - heading "Légal" [level=3] [ref=e204]
+          - list [ref=e205]:
+            - listitem [ref=e206]:
+              - link "CGU" [ref=e207] [cursor=pointer]:
+                - /url: /legal/terms
+            - listitem [ref=e208]:
+              - link "Confidentialité" [ref=e209] [cursor=pointer]:
+                - /url: /legal/privacy
+            - listitem [ref=e210]:
+              - link "Cookies" [ref=e211] [cursor=pointer]:
+                - /url: /legal/cookies
+      - generic [ref=e212]:
+        - paragraph [ref=e213]: BusExpress
+        - paragraph [ref=e214]: Made in West Africa 🌍
+  - navigation "Navigation mobile" [ref=e215]:
+    - link "Accueil" [ref=e216] [cursor=pointer]:
+      - /url: /fr
+      - img [ref=e218]
+      - generic [ref=e220]: Accueil
+    - link "Rechercher" [ref=e221] [cursor=pointer]:
+      - /url: /fr/search
+      - img [ref=e224]
+      - generic [ref=e227]: Rechercher
+    - link "Mes Voyages" [ref=e228] [cursor=pointer]:
+      - /url: /fr/account/bookings
+      - img [ref=e230]
+      - generic [ref=e233]: Mes Voyages
+    - link "Compte" [ref=e234] [cursor=pointer]:
+      - /url: /fr/account
+      - img [ref=e236]
+      - generic [ref=e239]: Compte
+  - region "Notifications (F8)":
+    - list

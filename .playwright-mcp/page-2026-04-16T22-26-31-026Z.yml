@@ -1,0 +1,219 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "BusExpress" [ref=e4] [cursor=pointer]:
+        - /url: /fr
+      - navigation "Navigation principale" [ref=e5]:
+        - link "Accueil" [ref=e6] [cursor=pointer]:
+          - /url: /fr
+        - link "Rechercher" [ref=e7] [cursor=pointer]:
+          - /url: /fr/search
+        - link "Mes Voyages" [ref=e8] [cursor=pointer]:
+          - /url: /fr/account/bookings
+        - link "Support" [ref=e9] [cursor=pointer]:
+          - /url: /fr/account/support
+      - link "Connexion" [ref=e10] [cursor=pointer]:
+        - /url: /fr/login
+  - main [ref=e12]:
+    - main [ref=e13]:
+      - navigation "Breadcrumb" [ref=e14]:
+        - list [ref=e15]:
+          - listitem [ref=e16]:
+            - link "Accueil" [ref=e17] [cursor=pointer]:
+              - /url: /fr
+          - listitem [ref=e18]: ">"
+          - listitem [ref=e19]:
+            - link "Recherche" [ref=e20] [cursor=pointer]:
+              - /url: /fr/search
+          - listitem [ref=e21]: ">"
+          - listitem [ref=e22]: Abidjan → Yamoussoukro
+      - form "Trip search" [ref=e23]:
+        - generic [ref=e24]:
+          - generic [ref=e25]: Origine
+          - textbox "Origine" [ref=e26]:
+            - /placeholder: Abidjan
+            - text: Abidjan
+        - generic [ref=e27]:
+          - generic [ref=e28]: Destination
+          - textbox "Destination" [ref=e29]:
+            - /placeholder: Yamoussoukro
+            - text: Yamoussoukro
+        - generic [ref=e30]:
+          - generic [ref=e31]: Date
+          - textbox "Date" [ref=e32]: 2026-04-20
+        - generic [ref=e33]:
+          - generic [ref=e34]: Passagers
+          - spinbutton "Passagers" [ref=e35]: "1"
+        - button "Rechercher" [ref=e37]
+      - region "Résultats de recherche" [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]: 5 trajet(s) trouvé(s)
+          - link "Recommandé" [ref=e41] [cursor=pointer]:
+            - /url: /fr/search?origin=Abidjan&destination=Yamoussoukro&date=2026-04-20&passengers=1&sort=recommended
+          - link "Prix" [ref=e42] [cursor=pointer]:
+            - /url: /fr/search?origin=Abidjan&destination=Yamoussoukro&date=2026-04-20&passengers=1&sort=price
+          - link "Durée" [ref=e43] [cursor=pointer]:
+            - /url: /fr/search?origin=Abidjan&destination=Yamoussoukro&date=2026-04-20&passengers=1&sort=duration
+          - link "Départ" [ref=e44] [cursor=pointer]:
+            - /url: /fr/search?origin=Abidjan&destination=Yamoussoukro&date=2026-04-20&passengers=1&sort=departure
+        - generic [ref=e45]:
+          - article [ref=e46]:
+            - generic [ref=e47]:
+              - generic [ref=e48]:
+                - generic [ref=e49]:
+                  - generic [ref=e50]: 07:00
+                  - generic [ref=e51]: → 12:00
+                - generic [ref=e52]: 5h
+              - generic [ref=e53]:
+                - generic [ref=e54]:
+                  - generic [ref=e55]: Abidjan
+                  - img [ref=e57]
+                  - generic [ref=e63]: Yamoussoukro
+                - generic [ref=e64]:
+                  - img "STC Ghana" [ref=e65]: SG
+                  - generic [ref=e66]: STC Ghana
+                  - generic "Note 4.5" [ref=e67]: ★ 4.5
+                - generic [ref=e69]: ac
+              - generic [ref=e70]:
+                - generic [ref=e71]: 6 200 F CFA
+                - generic [ref=e72]: 48 sièges
+                - link "Réserver" [ref=e73] [cursor=pointer]:
+                  - /url: /fr/booking/b6b100d0-ac8f-49a5-b28b-0c7c46f25ecb
+          - article [ref=e74]:
+            - generic [ref=e75]:
+              - generic [ref=e76]:
+                - generic [ref=e77]:
+                  - generic [ref=e78]: 11:00
+                  - generic [ref=e79]: → 16:00
+                - generic [ref=e80]: 5h
+              - generic [ref=e81]:
+                - generic [ref=e82]:
+                  - generic [ref=e83]: Abidjan
+                  - img [ref=e85]
+                  - generic [ref=e91]: Yamoussoukro
+                - generic [ref=e92]:
+                  - img "STC Ghana" [ref=e93]: SG
+                  - generic [ref=e94]: STC Ghana
+                  - generic "Note 4.5" [ref=e95]: ★ 4.5
+                - generic [ref=e97]: ac
+              - generic [ref=e98]:
+                - generic [ref=e99]: 6 200 F CFA
+                - generic [ref=e100]: 47 sièges
+                - link "Réserver" [ref=e101] [cursor=pointer]:
+                  - /url: /fr/booking/9f9bfdd2-aec0-41d0-bbf3-b863677d5dac
+          - article [ref=e102]:
+            - generic [ref=e103]:
+              - generic [ref=e104]:
+                - generic [ref=e105]:
+                  - generic [ref=e106]: 15:00
+                  - generic [ref=e107]: → 20:00
+                - generic [ref=e108]: 5h
+              - generic [ref=e109]:
+                - generic [ref=e110]:
+                  - generic [ref=e111]: Abidjan
+                  - img [ref=e113]
+                  - generic [ref=e119]: Yamoussoukro
+                - generic [ref=e120]:
+                  - img "STC Ghana" [ref=e121]: SG
+                  - generic [ref=e122]: STC Ghana
+                  - generic "Note 4.5" [ref=e123]: ★ 4.5
+                - generic [ref=e125]: ac
+              - generic [ref=e126]:
+                - generic [ref=e127]: 6 200 F CFA
+                - generic [ref=e128]: 46 sièges
+                - link "Réserver" [ref=e129] [cursor=pointer]:
+                  - /url: /fr/booking/9cab74f1-538a-4416-b645-81678d3a34dd
+          - article [ref=e130]:
+            - generic [ref=e131]:
+              - generic [ref=e132]:
+                - generic [ref=e133]:
+                  - generic [ref=e134]: 19:00
+                  - generic [ref=e135]: → 00:00
+                - generic [ref=e136]: 5h
+              - generic [ref=e137]:
+                - generic [ref=e138]:
+                  - generic [ref=e139]: Abidjan
+                  - img [ref=e141]
+                  - generic [ref=e147]: Yamoussoukro
+                - generic [ref=e148]:
+                  - img "STC Ghana" [ref=e149]: SG
+                  - generic [ref=e150]: STC Ghana
+                  - generic "Note 4.5" [ref=e151]: ★ 4.5
+                - generic [ref=e153]: ac
+              - generic [ref=e154]:
+                - generic [ref=e155]: 6 200 F CFA
+                - generic [ref=e156]: 34 sièges
+                - link "Réserver" [ref=e157] [cursor=pointer]:
+                  - /url: /fr/booking/72b1c146-1b9f-4e23-9f2a-1e781e8e524d
+          - article [ref=e158]:
+            - generic [ref=e159]:
+              - generic [ref=e160]:
+                - generic [ref=e161]:
+                  - generic [ref=e162]: 23:00
+                  - generic [ref=e163]: → 04:00
+                - generic [ref=e164]: 5h
+              - generic [ref=e165]:
+                - generic [ref=e166]:
+                  - generic [ref=e167]: Abidjan
+                  - img [ref=e169]
+                  - generic [ref=e175]: Yamoussoukro
+                - generic [ref=e176]:
+                  - img "STC Ghana" [ref=e177]: SG
+                  - generic [ref=e178]: STC Ghana
+                  - generic "Note 4.5" [ref=e179]: ★ 4.5
+                - generic [ref=e181]: ac
+              - generic [ref=e182]:
+                - generic [ref=e183]: 6 200 F CFA
+                - generic [ref=e184]: 31 sièges
+                - link "Réserver" [ref=e185] [cursor=pointer]:
+                  - /url: /fr/booking/4f1cf3e5-cfc3-4264-b203-ae033e3f6d67
+  - contentinfo [ref=e186]:
+    - generic [ref=e187]:
+      - generic [ref=e189]:
+        - generic [ref=e190]:
+          - heading "Entreprise" [level=3] [ref=e191]
+          - list [ref=e192]:
+            - listitem [ref=e193]:
+              - link "À propos" [ref=e194] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e195]:
+              - link "Carrières" [ref=e196] [cursor=pointer]:
+                - /url: /careers
+        - generic [ref=e197]:
+          - heading "Voyageurs" [level=3] [ref=e198]
+          - list [ref=e199]:
+            - listitem [ref=e200]:
+              - link "FAQ" [ref=e201] [cursor=pointer]:
+                - /url: /faq
+            - listitem [ref=e202]:
+              - link "Support" [ref=e203] [cursor=pointer]:
+                - /url: /account/support
+            - listitem [ref=e204]:
+              - link "Fidélité" [ref=e205] [cursor=pointer]:
+                - /url: /loyalty
+        - generic [ref=e206]:
+          - heading "Opérateurs" [level=3] [ref=e207]
+          - list [ref=e208]:
+            - listitem [ref=e209]:
+              - link "Portail opérateur" [ref=e210] [cursor=pointer]:
+                - /url: /operator
+            - listitem [ref=e211]:
+              - link "S'inscrire" [ref=e212] [cursor=pointer]:
+                - /url: /operator/register
+        - generic [ref=e213]:
+          - heading "Légal" [level=3] [ref=e214]
+          - list [ref=e215]:
+            - listitem [ref=e216]:
+              - link "CGU" [ref=e217] [cursor=pointer]:
+                - /url: /legal/terms
+            - listitem [ref=e218]:
+              - link "Confidentialité" [ref=e219] [cursor=pointer]:
+                - /url: /legal/privacy
+            - listitem [ref=e220]:
+              - link "Cookies" [ref=e221] [cursor=pointer]:
+                - /url: /legal/cookies
+      - generic [ref=e222]:
+        - paragraph [ref=e223]: BusExpress
+        - paragraph [ref=e224]: Made in West Africa 🌍
+  - region "Notifications (F8)":
+    - list

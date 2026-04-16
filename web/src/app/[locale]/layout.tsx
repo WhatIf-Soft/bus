@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -8,6 +9,13 @@ import { TooltipProvider } from '@/components/ui/Tooltip';
 import { ToastProvider } from '@/components/ui/Toast';
 import { PageShell } from '@/components/layout/PageShell';
 import '@/styles/globals.css';
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-jakarta',
+  weight: ['400', '500', '600', '700', '800'],
+});
 
 export const metadata: Metadata = {
   title: 'BusExpress — Reservation de bus en ligne',
@@ -32,7 +40,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir}>
+    <html lang={locale} dir={dir} className={jakarta.variable}>
       <body className="min-h-screen antialiased">
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>

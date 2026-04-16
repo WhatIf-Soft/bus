@@ -1,0 +1,170 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e4]:
+      - heading "Réservez votre bus en un clic" [level=1] [ref=e5]
+      - paragraph [ref=e6]: Voyagez à travers l'Afrique de l'Ouest en toute confiance
+      - form "Trip search" [ref=e8]:
+        - generic [ref=e9]:
+          - generic [ref=e10]: Origine
+          - textbox "Origine" [ref=e11]:
+            - /placeholder: Abidjan
+        - generic [ref=e12]:
+          - generic [ref=e13]: Destination
+          - textbox "Destination" [ref=e14]:
+            - /placeholder: Yamoussoukro
+        - generic [ref=e15]:
+          - generic [ref=e16]: Date
+          - textbox "Date" [ref=e17]: 2026-04-16
+        - generic [ref=e18]:
+          - generic [ref=e19]: Passagers
+          - spinbutton "Passagers" [ref=e20]: "1"
+        - button "Rechercher" [ref=e22]
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - img [ref=e25]
+          - text: 500+ trajets
+        - generic [ref=e29]:
+          - img [ref=e30]
+          - text: 3 pays
+        - generic [ref=e33]:
+          - img [ref=e34]
+          - text: Mobile Money
+    - generic [ref=e37]:
+      - heading "Comment ca marche" [level=2] [ref=e38]
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e41]: "1"
+          - heading "Recherchez" [level=3] [ref=e42]
+          - paragraph [ref=e43]: Trouvez votre trajet ideal parmi des centaines de destinations
+        - generic [ref=e44]:
+          - generic [ref=e45]: "2"
+          - heading "Reservez" [level=3] [ref=e46]
+          - paragraph [ref=e47]: Choisissez vos sieges et payez en toute securite
+        - generic [ref=e48]:
+          - generic [ref=e49]: "3"
+          - heading "Voyagez" [level=3] [ref=e50]
+          - paragraph [ref=e51]: Recevez votre billet avec QR code et embarquez
+    - generic [ref=e53]:
+      - heading "Trajets populaires" [level=2] [ref=e54]
+      - paragraph [ref=e55]: Decouvrez les itineraires les plus demandes
+      - generic [ref=e56]:
+        - link "Abidjan → Yamoussoukro A partir de 6 200 XOF · 5 departs/jour" [ref=e57] [cursor=pointer]:
+          - /url: /fr/search?origin=Abidjan&destination=Yamoussoukro&date=2026-04-16
+          - generic [ref=e58]:
+            - generic [ref=e59]: Abidjan → Yamoussoukro
+            - paragraph [ref=e60]: A partir de 6 200 XOF · 5 departs/jour
+          - generic [ref=e61]: →
+        - link "Abidjan → Bouake A partir de 7 500 XOF · 4 departs/jour" [ref=e62] [cursor=pointer]:
+          - /url: /fr/search?origin=Abidjan&destination=Bouake&date=2026-04-16
+          - generic [ref=e63]:
+            - generic [ref=e64]: Abidjan → Bouake
+            - paragraph [ref=e65]: A partir de 7 500 XOF · 4 departs/jour
+          - generic [ref=e66]: →
+        - link "Abidjan → Accra A partir de 15 000 XOF · 3 departs/jour" [ref=e67] [cursor=pointer]:
+          - /url: /fr/search?origin=Abidjan&destination=Accra&date=2026-04-16
+          - generic [ref=e68]:
+            - generic [ref=e69]: Abidjan → Accra
+            - paragraph [ref=e70]: A partir de 15 000 XOF · 3 departs/jour
+          - generic [ref=e71]: →
+        - link "Accra → Lome A partir de 8 000 XOF · 6 departs/jour" [ref=e72] [cursor=pointer]:
+          - /url: /fr/search?origin=Accra&destination=Lome&date=2026-04-16
+          - generic [ref=e73]:
+            - generic [ref=e74]: Accra → Lome
+            - paragraph [ref=e75]: A partir de 8 000 XOF · 6 departs/jour
+          - generic [ref=e76]: →
+        - link "Lome → Cotonou A partir de 5 500 XOF · 4 departs/jour" [ref=e77] [cursor=pointer]:
+          - /url: /fr/search?origin=Lome&destination=Cotonou&date=2026-04-16
+          - generic [ref=e78]:
+            - generic [ref=e79]: Lome → Cotonou
+            - paragraph [ref=e80]: A partir de 5 500 XOF · 4 departs/jour
+          - generic [ref=e81]: →
+        - link "Abidjan → Ouagadougou A partir de 22 000 XOF · 2 departs/jour" [ref=e82] [cursor=pointer]:
+          - /url: /fr/search?origin=Abidjan&destination=Ouagadougou&date=2026-04-16
+          - generic [ref=e83]:
+            - generic [ref=e84]: Abidjan → Ouagadougou
+            - paragraph [ref=e85]: A partir de 22 000 XOF · 2 departs/jour
+          - generic [ref=e86]: →
+    - generic [ref=e87]:
+      - heading "Nos operateurs partenaires" [level=2] [ref=e88]
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - img "STC Ghana" [ref=e91]: SG
+          - generic [ref=e92]: STC Ghana
+        - generic [ref=e93]:
+          - img "Africa Trans" [ref=e94]: AT
+          - generic [ref=e95]: Africa Trans
+        - generic [ref=e96]:
+          - img "Sahel Express" [ref=e97]: SE
+          - generic [ref=e98]: Sahel Express
+    - generic [ref=e99]:
+      - heading "Telechargez l'application BusExpress" [level=2] [ref=e100]
+      - paragraph [ref=e101]: Accedez a vos billets hors-ligne et recevez des alertes prix
+      - generic [ref=e102]:
+        - button "Bientot disponible" [disabled]
+  - contentinfo [ref=e103]:
+    - generic [ref=e104]:
+      - generic [ref=e106]:
+        - generic [ref=e107]:
+          - heading "Entreprise" [level=3] [ref=e108]
+          - list [ref=e109]:
+            - listitem [ref=e110]:
+              - link "À propos" [ref=e111] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e112]:
+              - link "Carrières" [ref=e113] [cursor=pointer]:
+                - /url: /careers
+        - generic [ref=e114]:
+          - heading "Voyageurs" [level=3] [ref=e115]
+          - list [ref=e116]:
+            - listitem [ref=e117]:
+              - link "FAQ" [ref=e118] [cursor=pointer]:
+                - /url: /faq
+            - listitem [ref=e119]:
+              - link "Support" [ref=e120] [cursor=pointer]:
+                - /url: /account/support
+            - listitem [ref=e121]:
+              - link "Fidélité" [ref=e122] [cursor=pointer]:
+                - /url: /loyalty
+        - generic [ref=e123]:
+          - heading "Opérateurs" [level=3] [ref=e124]
+          - list [ref=e125]:
+            - listitem [ref=e126]:
+              - link "Portail opérateur" [ref=e127] [cursor=pointer]:
+                - /url: /operator
+            - listitem [ref=e128]:
+              - link "S'inscrire" [ref=e129] [cursor=pointer]:
+                - /url: /operator/register
+        - generic [ref=e130]:
+          - heading "Légal" [level=3] [ref=e131]
+          - list [ref=e132]:
+            - listitem [ref=e133]:
+              - link "CGU" [ref=e134] [cursor=pointer]:
+                - /url: /legal/terms
+            - listitem [ref=e135]:
+              - link "Confidentialité" [ref=e136] [cursor=pointer]:
+                - /url: /legal/privacy
+            - listitem [ref=e137]:
+              - link "Cookies" [ref=e138] [cursor=pointer]:
+                - /url: /legal/cookies
+      - generic [ref=e139]:
+        - paragraph [ref=e140]: BusExpress
+        - paragraph [ref=e141]: Made in West Africa 🌍
+  - navigation "Navigation mobile" [ref=e142]:
+    - link "Accueil" [ref=e143] [cursor=pointer]:
+      - /url: /fr
+      - img [ref=e146]
+      - generic [ref=e148]: Accueil
+    - link "Rechercher" [ref=e149] [cursor=pointer]:
+      - /url: /fr/search
+      - img [ref=e151]
+      - generic [ref=e154]: Rechercher
+    - link "Mes Voyages" [ref=e155] [cursor=pointer]:
+      - /url: /fr/account/bookings
+      - img [ref=e157]
+      - generic [ref=e160]: Mes Voyages
+    - link "Compte" [ref=e161] [cursor=pointer]:
+      - /url: /fr/account
+      - img [ref=e163]
+      - generic [ref=e166]: Compte
+  - region "Notifications (F8)":
+    - list
