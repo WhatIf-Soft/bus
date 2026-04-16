@@ -129,7 +129,7 @@ export function BottomTabBar() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 z-40 flex h-[var(--tabbar-height)] w-full items-center justify-around border-t border-black/5 bg-[var(--color-surface-elevated)] pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed bottom-0 left-0 z-40 flex h-[var(--tabbar-height)] w-full items-center justify-around border-t border-black/5 bg-[var(--color-surface-elevated)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg md:hidden"
       aria-label="Navigation mobile"
     >
       {tabs.map((tab) => {
@@ -139,7 +139,7 @@ export function BottomTabBar() {
             key={tab.path}
             href={tab.path}
             className={cn(
-              'relative flex flex-1 flex-col items-center gap-0.5 pt-1',
+              'relative flex flex-1 flex-col items-center gap-0.5 pt-1 transition-colors duration-[var(--duration-fast)]',
               active
                 ? 'text-[var(--color-accent-warm)]'
                 : 'text-[var(--color-text-muted)]',
@@ -147,11 +147,13 @@ export function BottomTabBar() {
           >
             {active ? (
               <span
-                className="absolute top-0 left-1/2 h-[2px] w-6 -translate-x-1/2 rounded-full bg-[var(--color-accent-warm)]"
+                className="absolute top-0 left-1/2 h-[2px] w-8 -translate-x-1/2 rounded-full bg-[var(--color-accent-warm)] transition-all duration-[var(--duration-normal)]"
                 aria-hidden="true"
               />
             ) : null}
-            {tab.icon(active)}
+            <span className={active ? 'tab-active-icon' : 'transition-transform duration-[var(--duration-fast)]'}>
+              {tab.icon(active)}
+            </span>
             <span className="text-[var(--text-xs)]">{tab.label}</span>
           </Link>
         );

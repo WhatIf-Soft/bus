@@ -40,7 +40,7 @@ export function Header() {
     user?.role === UserRole.OPERATEUR || user?.role === UserRole.ADMIN;
 
   return (
-    <header className="sticky top-0 z-40 hidden h-[var(--header-height)] border-b border-black/5 bg-[var(--color-surface-elevated)] md:block">
+    <header className="animate-slide-down sticky top-0 z-40 hidden h-[var(--header-height)] border-b border-black/5 bg-[var(--color-surface-elevated)]/95 backdrop-blur-lg md:block">
       <div className="relative mx-auto flex h-full max-w-[var(--max-content)] items-center justify-between px-[var(--space-page-x)]">
         {/* Logo */}
         <Link

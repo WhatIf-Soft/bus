@@ -47,21 +47,21 @@ export default async function HomePage({ params }: HomePageProps) {
 
   return (
     <>
-      {/* HERO */}
-      <section className="relative flex min-h-[70vh] items-center justify-center bg-gradient-to-b from-[oklch(20%_0.02_250)] via-[oklch(25%_0.03_40)] to-[oklch(15%_0.01_250)]">
-        <div className="relative z-10 mx-auto w-full max-w-2xl px-[var(--space-page-x)] py-16">
-          <h1 className="text-center text-[var(--text-hero)] font-bold leading-tight text-white">
-            Reservez votre bus en un clic
+      {/* HERO — animated gradient + staggered entrance */}
+      <section className="hero-gradient hero-particles relative flex min-h-[75vh] items-center justify-center overflow-hidden">
+        <div className="relative z-10 mx-auto w-full max-w-2xl px-[var(--space-page-x)] py-20">
+          <h1 className="animate-entrance animate-entrance-1 text-center text-[var(--text-hero)] font-extrabold leading-[1.1] tracking-tight text-white drop-shadow-lg">
+            Réservez votre bus en un clic
           </h1>
-          <p className="mt-3 text-center text-lg text-white/70">
-            Voyagez a travers l&apos;Afrique de l&apos;Ouest en toute confiance
+          <p className="animate-entrance animate-entrance-2 mt-4 text-center text-lg text-white/70">
+            Voyagez à travers l&apos;Afrique de l&apos;Ouest en toute confiance
           </p>
 
-          <div className="mt-8 rounded-[var(--radius-xl)] bg-[var(--color-surface-elevated)] p-6 shadow-2xl">
+          <div className="animate-scale-in mt-10 rounded-[var(--radius-xl)] bg-[var(--color-surface-elevated)] p-6 shadow-2xl ring-1 ring-white/10 backdrop-blur-sm" style={{ animationDelay: '300ms' }}>
             <SearchForm locale={locale} />
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-sm text-white/80">
+          <div className="animate-entrance animate-entrance-4 mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-white/80">
             <span className="inline-flex items-center gap-1.5">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M2 8h12M8 2v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -97,7 +97,7 @@ export default async function HomePage({ params }: HomePageProps) {
         <div className="mx-auto mt-10 flex max-w-3xl flex-col items-start gap-8 md:flex-row md:items-start md:gap-8">
           {HOW_IT_WORKS_STEPS.map((step) => (
             <div key={step.number} className="flex flex-1 flex-col items-center text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-accent-warm)] text-lg font-bold text-white">
+              <span className="step-circle flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-accent-warm)] text-lg font-bold text-white shadow-lg shadow-[var(--color-accent-warm)]/20">
                 {step.number}
               </span>
               <h3 className="mt-4 font-semibold">{step.title}</h3>
@@ -124,7 +124,7 @@ export default async function HomePage({ params }: HomePageProps) {
             <Link
               key={`${route.origin}-${route.destination}`}
               href={`/${locale}/search?origin=${encodeURIComponent(route.origin)}&destination=${encodeURIComponent(route.destination)}&date=${today}`}
-              className="group flex items-center justify-between rounded-[var(--radius-lg)] border border-black/10 p-4 transition hover:shadow-md"
+              className="card-hover group flex items-center justify-between rounded-[var(--radius-lg)] border border-black/5 bg-[var(--color-surface-elevated)] p-4"
             >
               <div>
                 <span className="font-semibold">

@@ -65,7 +65,7 @@ export function TripCard({ trip, locale, passengers = 1, onJoinWaitlist }: TripC
   const soldOut = trip.available_seats < passengers;
 
   return (
-    <article className="rounded-[var(--radius-lg)] border border-black/5 bg-[var(--color-surface-elevated)] p-4 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5">
+    <article className="card-hover rounded-[var(--radius-lg)] border border-black/5 bg-[var(--color-surface-elevated)] p-4 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
         {/* Left — Times + Duration */}
         <div className="flex shrink-0 flex-col gap-1.5">
