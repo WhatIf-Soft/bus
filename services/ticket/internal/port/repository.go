@@ -15,4 +15,5 @@ type TicketRepository interface {
 	ListByBooking(ctx context.Context, bookingID uuid.UUID) ([]domain.Ticket, error)
 	ListByUser(ctx context.Context, userID uuid.UUID, limit, offset int) ([]domain.Ticket, int, error)
 	MarkUsed(ctx context.Context, id uuid.UUID, when time.Time) error
+	UpdateTransfer(ctx context.Context, id uuid.UUID, newName, newQR string) error
 }

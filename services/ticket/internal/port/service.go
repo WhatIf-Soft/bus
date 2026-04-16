@@ -15,6 +15,7 @@ type TicketService interface {
 	ListByUser(ctx context.Context, userID uuid.UUID, limit, offset int) ([]domain.Ticket, int, error)
 	GeneratePDF(ctx context.Context, userID, ticketID uuid.UUID) ([]byte, error)
 	Validate(ctx context.Context, qrPayload string) (*domain.Ticket, error)
+	Transfer(ctx context.Context, userID, ticketID uuid.UUID, newPassengerName string) (*domain.Ticket, error)
 }
 
 // BookingInfo is the snapshot needed from booking-service to issue tickets.

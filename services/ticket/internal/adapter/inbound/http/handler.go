@@ -181,6 +181,35 @@ func (h *Handler) Validate(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, toTicketResponse(*t))
 }
 
+// Transfer handles POST /api/v1/tickets/{id}/transfer.
+func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
+	userID, err := userIDFromCtx(r)
+	if err != nil {
+		response.Error(w, apperrors.NewUnauthorized("invalid token"))
+		return
+	}
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		response.Error(w, apperrors.NewValidation("invalid ticket id"))
+		return
+	}
+	var req TransferRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, apperrors.NewValidation("invalid JSON"))
+		return
+	}
+	if err := validation.ValidateStruct(&req); err != nil {
+		response.Error(w, err)
+		return
+	}
+	t, err := h.service.Transfer(r.Context(), userID, id, req.NewPassengerName)
+	if err != nil {
+		mapError(w, err)
+		return
+	}
+	response.JSON(w, http.StatusOK, toTicketResponse(*t))
+}
+
 func mapError(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, domain.ErrTicketNotFound):

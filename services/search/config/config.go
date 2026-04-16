@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
+	JWT      JWTConfig
 	Log      LogConfig
 }
 
@@ -25,6 +26,10 @@ type DatabaseConfig struct {
 }
 
 // LogConfig holds logging settings.
+type JWTConfig struct {
+	Secret string
+}
+
 type LogConfig struct {
 	Level string
 }
@@ -41,6 +46,7 @@ func Load() (*Config, error) {
 	v.SetDefault("server.host", "0.0.0.0")
 	v.SetDefault("server.port", 4002)
 	v.SetDefault("database.dsn", "postgres://busexpress:busexpress_dev@localhost:5433/busexpress_search?sslmode=disable")
+	v.SetDefault("jwt.secret", "dev-secret-change-me")
 	v.SetDefault("log.level", "info")
 
 	if err := v.ReadInConfig(); err != nil {

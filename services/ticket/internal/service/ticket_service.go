@@ -167,6 +167,32 @@ func (s *ticketService) Validate(ctx context.Context, qrPayload string) (*domain
 	return t, nil
 }
 
+func (s *ticketService) Transfer(ctx context.Context, userID, ticketID uuid.UUID, newPassengerName string) (*domain.Ticket, error) {
+	t, err := s.GetByID(ctx, userID, ticketID)
+	if err != nil {
+		return nil, err
+	}
+	if t.Status != domain.StatusIssued {
+		return nil, domain.ErrAlreadyUsed
+	}
+	payload := qrsig.Payload{
+		TicketID:  t.ID,
+		BookingID: t.BookingID,
+		SeatID:    t.SeatNumber,
+		TripID:    t.TripID,
+		Passenger: newPassengerName,
+		ExpiresAt: t.ExpiresAt,
+	}
+	newQR, err := qrsig.Encode(s.qrSecret, payload)
+	if err != nil {
+		return nil, fmt.Errorf("re-sign QR: %w", err)
+	}
+	if err := s.repo.UpdateTransfer(ctx, t.ID, newPassengerName, newQR); err != nil {
+		return nil, err
+	}
+	return s.repo.GetByID(ctx, t.ID)
+}
+
 func renderPDF(t *domain.Ticket, trip *port.TripInfo) ([]byte, error) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()

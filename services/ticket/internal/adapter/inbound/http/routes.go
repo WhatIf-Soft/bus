@@ -23,5 +23,6 @@ func RegisterRoutes(r chi.Router, svc port.TicketService, jwtSecret []byte) {
 		r.Get("/", h.ListByBooking)
 		r.Get("/{id}", h.Get)
 		r.Get("/{id}/pdf", h.PDF)
+		r.Post("/{id}/transfer", h.Transfer)
 	})
 }

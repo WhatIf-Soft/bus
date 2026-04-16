@@ -16,6 +16,11 @@ type ValidateRequest struct {
 	QR string `json:"qr" validate:"required"`
 }
 
+// TransferRequest is the body for POST /api/v1/tickets/{id}/transfer.
+type TransferRequest struct {
+	NewPassengerName string `json:"new_passenger_name" validate:"required,min=2,max=200"`
+}
+
 // TicketResponse is the public representation of a ticket.
 type TicketResponse struct {
 	ID            string     `json:"id"`

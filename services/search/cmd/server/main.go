@@ -83,7 +83,7 @@ func runServe(_ *cobra.Command, _ []string) error {
 	))
 	r.Handle("/metrics", metrics.NewHandler())
 
-	searchhttp.RegisterRoutes(r, svc)
+	searchhttp.RegisterRoutes(r, svc, []byte(cfg.JWT.Secret), pool)
 
 	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 	srv := &http.Server{

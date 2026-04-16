@@ -138,3 +138,18 @@ func (r *repo) MarkUsed(ctx context.Context, id uuid.UUID, when time.Time) error
 	}
 	return nil
 }
+
+func (r *repo) UpdateTransfer(ctx context.Context, id uuid.UUID, newName, newQR string) error {
+	const q = `
+        UPDATE tickets
+        SET passenger_name = $1, qr_signature = $2
+        WHERE id = $3 AND status = 'issued'`
+	tag, err := r.pool.Exec(ctx, q, newName, newQR, id)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return domain.ErrAlreadyUsed
+	}
+	return nil
+}
