@@ -1,6 +1,10 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
 import { SearchForm } from '@/components/search/SearchForm';
 import { TripCard } from '@/components/search/TripCard';
+import { SkeletonTripCard } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { Button } from '@/components/ui/Button';
 import { searchTrips, type Trip } from '@/lib/search-api';
 
 export const dynamic = 'force-dynamic';
@@ -10,9 +14,49 @@ interface SearchPageProps {
   readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+type SortOption = 'recommended' | 'price' | 'duration' | 'departure';
+
+const SORT_LABELS: Record<SortOption, string> = {
+  recommended: 'Recommandé',
+  price: 'Prix',
+  duration: 'Durée',
+  departure: 'Départ',
+};
+
+const SORT_OPTIONS: ReadonlyArray<SortOption> = ['recommended', 'price', 'duration', 'departure'];
+
 function pickString(v: string | string[] | undefined): string {
   if (Array.isArray(v)) return v[0] ?? '';
   return v ?? '';
+}
+
+function SearchIcon() {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="flex flex-col gap-3">
+      <SkeletonTripCard />
+      <SkeletonTripCard />
+      <SkeletonTripCard />
+    </div>
+  );
 }
 
 async function SearchResults({
@@ -27,7 +71,7 @@ async function SearchResults({
   destination: string;
   date: string;
   passengers: number;
-  sort: 'recommended' | 'price' | 'duration' | 'departure';
+  sort: SortOption;
   locale: string;
 }) {
   let trips: ReadonlyArray<Trip> = [];
@@ -44,7 +88,7 @@ async function SearchResults({
 
   if (errorMsg) {
     return (
-      <div role="alert" className="rounded bg-red-50 p-4 text-red-800">
+      <div role="alert" className="rounded-[var(--radius-lg)] bg-[var(--color-error)]/10 p-4 text-[var(--color-error)]">
         {errorMsg}
       </div>
     );
@@ -52,18 +96,54 @@ async function SearchResults({
 
   if (trips.length === 0) {
     return (
-      <p className="rounded bg-black/5 p-4 text-center">
-        Aucun trajet trouvé pour {origin} → {destination} le {date}.
-      </p>
+      <EmptyState
+        icon={<SearchIcon />}
+        heading="Aucun trajet trouvé"
+        description="Essayez une date différente ou consultez les correspondances"
+        action={
+          <Button asChild variant="secondary">
+            <Link href={`/${locale}/search`}>Nouvelle recherche</Link>
+          </Button>
+        }
+      />
     );
   }
 
   return (
     <>
-      <p className="text-sm text-[var(--color-text-muted)]">{total} trajet(s) trouvé(s)</p>
+      {/* Result count + sort pills */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="mr-2 text-[var(--text-small)] text-[var(--color-text-muted)]">
+          {total} trajet(s) trouvé(s)
+        </span>
+        {SORT_OPTIONS.map((s) => {
+          const qs = new URLSearchParams({
+            origin,
+            destination,
+            date,
+            passengers: String(passengers),
+            sort: s,
+          });
+          return (
+            <a
+              key={s}
+              href={`/${locale}/search?${qs.toString()}`}
+              className={
+                s === sort
+                  ? 'rounded-[var(--radius-full)] bg-[var(--color-accent-warm)] px-3 py-1 text-[var(--text-xs)] font-medium text-white transition-colors'
+                  : 'rounded-[var(--radius-full)] border border-black/10 px-3 py-1 text-[var(--text-xs)] font-medium text-[var(--color-text-muted)] transition-colors hover:border-black/20'
+              }
+            >
+              {SORT_LABELS[s]}
+            </a>
+          );
+        })}
+      </div>
+
+      {/* Trip list */}
       <div className="flex flex-col gap-3">
         {trips.map((trip) => (
-          <TripCard key={trip.id} trip={trip} locale={locale} />
+          <TripCard key={trip.id} trip={trip} locale={locale} passengers={passengers} />
         ))}
       </div>
     </>
@@ -78,16 +158,40 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
   const date = pickString(sp.date) || new Date().toISOString().slice(0, 10);
   const passengers = Math.max(1, Number(pickString(sp.passengers) || '1'));
   const sortRaw = pickString(sp.sort);
-  const sort = (['recommended', 'price', 'duration', 'departure'].includes(sortRaw)
-    ? sortRaw
-    : 'recommended') as 'recommended' | 'price' | 'duration' | 'departure';
+  const sort: SortOption = (SORT_OPTIONS as ReadonlyArray<string>).includes(sortRaw)
+    ? (sortRaw as SortOption)
+    : 'recommended';
 
   const hasQuery = origin !== '' && destination !== '';
 
   return (
     <main className="mx-auto flex max-w-4xl flex-col gap-6 p-4">
-      <h1 className="text-3xl font-semibold tracking-tight">Rechercher un trajet</h1>
+      {/* Breadcrumb */}
+      <nav aria-label="Breadcrumb" className="text-[var(--text-small)] text-[var(--color-text-muted)]">
+        <ol className="flex flex-wrap items-center gap-1">
+          <li>
+            <Link href={`/${locale}`} className="hover:text-[var(--color-text)] transition-colors">
+              Accueil
+            </Link>
+          </li>
+          <li aria-hidden="true">&gt;</li>
+          <li>
+            <Link href={`/${locale}/search`} className="hover:text-[var(--color-text)] transition-colors">
+              Recherche
+            </Link>
+          </li>
+          {hasQuery && (
+            <>
+              <li aria-hidden="true">&gt;</li>
+              <li aria-current="page" className="font-medium text-[var(--color-text)]">
+                {origin} → {destination}
+              </li>
+            </>
+          )}
+        </ol>
+      </nav>
 
+      {/* Search form */}
       <SearchForm
         defaultOrigin={origin}
         defaultDestination={destination}
@@ -96,42 +200,10 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
         locale={locale}
       />
 
+      {/* Results */}
       {hasQuery && (
-        <section className="flex flex-col gap-4">
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="text-[var(--color-text-muted)]">Trier par:</span>
-            {(['recommended', 'price', 'duration', 'departure'] as const).map((s) => {
-              const qs = new URLSearchParams({
-                origin,
-                destination,
-                date,
-                passengers: String(passengers),
-                sort: s,
-              });
-              const label =
-                s === 'recommended'
-                  ? 'Recommandé'
-                  : s === 'price'
-                    ? 'Prix'
-                    : s === 'duration'
-                      ? 'Durée'
-                      : 'Départ';
-              return (
-                <a
-                  key={s}
-                  href={`/${locale}/search?${qs.toString()}`}
-                  className={`rounded border px-2 py-1 ${
-                    s === sort
-                      ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white'
-                      : 'border-black/10'
-                  }`}
-                >
-                  {label}
-                </a>
-              );
-            })}
-          </div>
-          <Suspense fallback={<p>Chargement…</p>}>
+        <section className="flex flex-col gap-4" aria-label="Résultats de recherche">
+          <Suspense fallback={<LoadingFallback />}>
             <SearchResults
               origin={origin}
               destination={destination}
