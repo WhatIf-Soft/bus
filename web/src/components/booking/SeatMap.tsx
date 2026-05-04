@@ -95,7 +95,7 @@ export function SeatMap({
                   'h-10 w-10 rounded-lg border text-xs font-medium transition-colors',
                   isTaken && 'cursor-not-allowed bg-black/20 text-white/60',
                   !isTaken && !isSelected && 'border-black/20 hover:border-[var(--color-primary)]',
-                  isSelected && 'animate-[seat-pulse_1.5s_ease-in-out] border-[var(--color-accent-warm)] bg-[var(--color-accent-warm)] text-white',
+                  isSelected && 'animate-[seat-pulse_1.5s_ease-in-out] border-[var(--color-accent-warm-ink)] bg-[var(--color-accent-warm-ink)] text-white',
                 )}
               >
                 {label}

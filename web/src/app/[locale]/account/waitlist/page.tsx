@@ -31,7 +31,7 @@ function statusBadge(s: WaitlistStatus): string {
 
 export default function WaitlistPage({ params }: PageProps) {
   const router = useRouter();
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken, isAuthenticated, hasHydrated } = useAuth();
   const [locale, setLocale] = useState('fr');
   const [entries, setEntries] = useState<ReadonlyArray<WaitlistEntry>>([]);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +42,7 @@ export default function WaitlistPage({ params }: PageProps) {
   }, [params]);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (!isAuthenticated) {
       router.replace(`/${locale}/login?next=/${locale}/account/waitlist`);
       return;
@@ -52,7 +53,7 @@ export default function WaitlistPage({ params }: PageProps) {
       .then((r) => setEntries(r.entries))
       .catch((e) => setError(e instanceof Error ? e.message : 'erreur'))
       .finally(() => setLoading(false));
-  }, [accessToken, isAuthenticated, router, locale]);
+  }, [accessToken, isAuthenticated, hasHydrated, router, locale]);
 
   async function onCancel(id: string): Promise<void> {
     if (!accessToken) return;

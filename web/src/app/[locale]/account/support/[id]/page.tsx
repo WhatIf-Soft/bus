@@ -13,13 +13,14 @@ interface PageProps {
 export default function TicketDetailPage({ params }: PageProps) {
   const { locale, id } = use(params);
   const router = useRouter();
-  const { accessToken, isAuthenticated, user } = useAuth();
+  const { accessToken, isAuthenticated, hasHydrated, user } = useAuth();
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [reply, setReply] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (!isAuthenticated) {
       router.replace(`/${locale}/login?next=/${locale}/account/support/${id}`);
       return;
@@ -29,7 +30,7 @@ export default function TicketDetailPage({ params }: PageProps) {
       .get(accessToken, id)
       .then(setTicket)
       .catch((e) => setError(e instanceof Error ? e.message : 'erreur'));
-  }, [accessToken, isAuthenticated, id, locale, router]);
+  }, [accessToken, isAuthenticated, hasHydrated, id, locale, router]);
 
   async function send(): Promise<void> {
     if (!accessToken || reply.trim() === '') return;

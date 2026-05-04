@@ -32,7 +32,7 @@ export function Tooltip({ children, content, side = 'top' }: TooltipProps) {
           sideOffset={6}
           className={cn(
             'z-50 rounded-[var(--radius-md)] bg-[var(--color-text)] px-3 py-1.5',
-            'text-[var(--text-xs)] text-[var(--color-text-inverse)] shadow-lg',
+            'text-[length:var(--text-xs)] text-[var(--color-text-inverse)] shadow-lg',
             'animate-in fade-in-0 zoom-in-95',
             'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
           )}

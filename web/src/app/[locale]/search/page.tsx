@@ -109,11 +109,13 @@ async function SearchResults({
     );
   }
 
+  const { cheapestId, earliestId } = pickCheapestAndEarliest(trips);
+
   return (
     <>
       {/* Result count + sort pills */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="mr-2 text-[var(--text-small)] text-[var(--color-text-muted)]">
+        <span className="mr-2 text-[length:var(--text-small)] text-[var(--color-text-muted)]">
           {total} trajet(s) trouvé(s)
         </span>
         {SORT_OPTIONS.map((s) => {
@@ -130,8 +132,8 @@ async function SearchResults({
               href={`/${locale}/search?${qs.toString()}`}
               className={
                 s === sort
-                  ? 'rounded-[var(--radius-full)] bg-[var(--color-accent-warm)] px-3 py-1 text-[var(--text-xs)] font-medium text-white transition-colors'
-                  : 'rounded-[var(--radius-full)] border border-black/10 px-3 py-1 text-[var(--text-xs)] font-medium text-[var(--color-text-muted)] transition-colors hover:border-black/20'
+                  ? 'rounded-[var(--radius-full)] bg-[var(--color-accent-warm-ink)] px-3 py-1 text-[length:var(--text-xs)] font-medium text-white transition-colors'
+                  : 'rounded-[var(--radius-full)] border border-black/10 px-3 py-1 text-[length:var(--text-xs)] font-medium text-[var(--color-text-muted)] transition-colors hover:border-black/20'
               }
             >
               {SORT_LABELS[s]}
@@ -142,12 +144,36 @@ async function SearchResults({
 
       {/* Trip list */}
       <div className="flex flex-col gap-3">
-        {trips.map((trip) => (
-          <TripCard key={trip.id} trip={trip} locale={locale} passengers={passengers} />
-        ))}
+        {trips.map((trip) => {
+          const isCheapest = trip.id === cheapestId;
+          const isEarliest = trip.id === earliestId;
+          return (
+            <TripCard
+              key={trip.id}
+              trip={trip}
+              locale={locale}
+              passengers={passengers}
+              isCheapest={isCheapest}
+              isEarliest={isEarliest}
+            />
+          );
+        })}
       </div>
     </>
   );
+}
+
+function pickCheapestAndEarliest(trips: ReadonlyArray<Trip>): {
+  cheapestId: string | null;
+  earliestId: string | null;
+} {
+  if (trips.length === 0) return { cheapestId: null, earliestId: null };
+  const cheapest = trips.reduce((min, t) => (t.price_cents < min.price_cents ? t : min), trips[0]);
+  const earliest = trips.reduce(
+    (min, t) => (new Date(t.departure_time) < new Date(min.departure_time) ? t : min),
+    trips[0],
+  );
+  return { cheapestId: cheapest.id, earliestId: earliest.id };
 }
 
 export default async function SearchPage({ params, searchParams }: SearchPageProps) {
@@ -167,7 +193,7 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
   return (
     <main className="mx-auto flex max-w-4xl flex-col gap-6 p-4">
       {/* Breadcrumb */}
-      <nav aria-label="Breadcrumb" className="text-[var(--text-small)] text-[var(--color-text-muted)]">
+      <nav aria-label="Breadcrumb" className="text-[length:var(--text-small)] text-[var(--color-text-muted)]">
         <ol className="flex flex-wrap items-center gap-1">
           <li>
             <Link href={`/${locale}`} className="hover:text-[var(--color-text)] transition-colors">

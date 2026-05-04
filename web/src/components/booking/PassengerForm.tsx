@@ -16,7 +16,7 @@ const CATEGORIES: ReadonlyArray<{ readonly value: PassengerCategory; readonly la
   { value: 'adult', label: 'Adulte' },
   { value: 'child', label: 'Enfant (2-11)' },
   { value: 'senior', label: 'Senior (60+)' },
-  { value: 'student', label: '\u00c9tudiant' },
+  { value: 'student', label: 'Étudiant' },
 ];
 
 export function PassengerForm({ seats, passengers, onChange }: PassengerFormProps) {
@@ -52,9 +52,9 @@ export function PassengerForm({ seats, passengers, onChange }: PassengerFormProp
               />
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center gap-2">
-                  <label className="text-[var(--text-small)] font-medium">Catégorie</label>
+                  <label className="text-[length:var(--text-small)] font-medium">Catégorie</label>
                   {p.category === 'child' && (
-                    <Badge variant="gold">{'\u2212'}50%</Badge>
+                    <Badge variant="gold">{'−'}50%</Badge>
                   )}
                 </div>
                 <ToggleGroup.Root
@@ -75,9 +75,9 @@ export function PassengerForm({ seats, passengers, onChange }: PassengerFormProp
                       key={c.value}
                       value={c.value}
                       className={cn(
-                        'px-3 py-1.5 text-[var(--text-xs)] font-medium transition-colors',
+                        'px-3 py-1.5 text-[length:var(--text-xs)] font-medium transition-colors',
                         p.category === c.value
-                          ? 'rounded-[var(--radius-full)] bg-[var(--color-accent-warm)] text-white'
+                          ? 'rounded-[var(--radius-full)] bg-[var(--color-accent-warm-ink)] text-white'
                           : 'rounded-[var(--radius-full)] border border-black/10 text-[var(--color-text-muted)]',
                       )}
                     >

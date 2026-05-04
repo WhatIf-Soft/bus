@@ -61,6 +61,7 @@ export function useAuth() {
     user: store.user,
     accessToken: store.accessToken,
     isAuthenticated: store.accessToken !== null,
+    hasHydrated: store.hasHydrated,
     login,
     login2FA,
     register,

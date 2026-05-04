@@ -117,7 +117,7 @@ export default function FleetPage() {
             required
           />
           <div className="flex flex-col gap-1.5">
-            <label className="text-[var(--text-small)] font-medium">Classe</label>
+            <label className="text-[length:var(--text-small)] font-medium">Classe</label>
             <select
               value={busClass}
               onChange={(e) => setBusClass(e.target.value as BusClass)}

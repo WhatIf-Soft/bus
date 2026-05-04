@@ -1,4 +1,12 @@
 import { apiClient } from './api-client';
+import { withMockFallback } from './mock/fallback';
+import {
+  MOCK_BUSES,
+  MOCK_DRIVERS,
+  MOCK_OPERATOR_PROFILE,
+  MOCK_CANCELLATION_POLICY,
+  MOCK_BAGGAGE_POLICY,
+} from './mock';
 
 export interface OperatorProfile {
   readonly id: string;
@@ -67,43 +75,122 @@ async function call<T>(
   return res.data as T;
 }
 
+function listBusesMock(): ListResult<Bus> {
+  return { items: MOCK_BUSES as ReadonlyArray<Bus>, total: MOCK_BUSES.length, limit: 50, offset: 0 };
+}
+
+function listDriversMock(): ListResult<Driver> {
+  return { items: MOCK_DRIVERS as ReadonlyArray<Driver>, total: MOCK_DRIVERS.length, limit: 50, offset: 0 };
+}
+
 export const operatorApi = {
   getProfile: (token: string, defaultName?: string) =>
-    call<OperatorProfile>(
-      `/operator/profile${defaultName ? `?default_name=${encodeURIComponent(defaultName)}` : ''}`,
-      token,
+    withMockFallback(
+      () =>
+        call<OperatorProfile>(
+          `/operator/profile${defaultName ? `?default_name=${encodeURIComponent(defaultName)}` : ''}`,
+          token,
+        ),
+      () => ({
+        ...MOCK_OPERATOR_PROFILE,
+        name: defaultName ?? MOCK_OPERATOR_PROFILE.name,
+      }),
     ),
   updateProfile: (token: string, patch: Partial<OperatorProfile>) =>
-    call<OperatorProfile>('/operator/profile', token, { method: 'PUT', body: patch }),
+    withMockFallback(
+      () => call<OperatorProfile>('/operator/profile', token, { method: 'PUT', body: patch }),
+      () => ({ ...MOCK_OPERATOR_PROFILE, ...patch }),
+    ),
 
-  listBuses: (token: string) => call<ListResult<Bus>>('/operator/buses', token),
+  listBuses: (token: string) =>
+    withMockFallback(() => call<ListResult<Bus>>('/operator/buses', token), listBusesMock),
   createBus: (token: string, body: Omit<Bus, 'id' | 'status' | 'updated_at'>) =>
-    call<Bus>('/operator/buses', token, { method: 'POST', body }),
+    withMockFallback(
+      () => call<Bus>('/operator/buses', token, { method: 'POST', body }),
+      () => ({
+        id: `b-demo-${Date.now().toString(36)}`,
+        license_plate: body.license_plate,
+        model: body.model,
+        capacity: body.capacity,
+        class: body.class,
+        amenities: body.amenities,
+        status: 'active' as BusStatus,
+        updated_at: new Date().toISOString(),
+      }),
+    ),
   updateBus: (token: string, id: string, body: Partial<Bus>) =>
-    call<Bus>(`/operator/buses/${id}`, token, { method: 'PUT', body }),
+    withMockFallback(
+      () => call<Bus>(`/operator/buses/${id}`, token, { method: 'PUT', body }),
+      () => {
+        const base = MOCK_BUSES.find((b) => b.id === id) ?? MOCK_BUSES[0];
+        return {
+          ...(base as Bus),
+          ...body,
+          updated_at: new Date().toISOString(),
+        };
+      },
+    ),
   deleteBus: (token: string, id: string) =>
-    call<{ status: string }>(`/operator/buses/${id}`, token, { method: 'DELETE' }),
+    withMockFallback(
+      () => call<{ status: string }>(`/operator/buses/${id}`, token, { method: 'DELETE' }),
+      () => ({ status: `deleted:${id}` }),
+    ),
 
-  listDrivers: (token: string) => call<ListResult<Driver>>('/operator/drivers', token),
+  listDrivers: (token: string) =>
+    withMockFallback(() => call<ListResult<Driver>>('/operator/drivers', token), listDriversMock),
   createDriver: (token: string, body: Omit<Driver, 'id' | 'status'>) =>
-    call<Driver>('/operator/drivers', token, { method: 'POST', body }),
+    withMockFallback(
+      () => call<Driver>('/operator/drivers', token, { method: 'POST', body }),
+      () => ({
+        id: `d-demo-${Date.now().toString(36)}`,
+        first_name: body.first_name,
+        last_name: body.last_name,
+        license_number: body.license_number,
+        phone: body.phone ?? null,
+        license_expires_at: body.license_expires_at,
+        status: 'active' as DriverStatus,
+      }),
+    ),
   updateDriver: (token: string, id: string, body: Partial<Driver>) =>
-    call<Driver>(`/operator/drivers/${id}`, token, { method: 'PUT', body }),
+    withMockFallback(
+      () => call<Driver>(`/operator/drivers/${id}`, token, { method: 'PUT', body }),
+      () => {
+        const base = MOCK_DRIVERS.find((d) => d.id === id) ?? MOCK_DRIVERS[0];
+        return { ...(base as Driver), ...body };
+      },
+    ),
   deleteDriver: (token: string, id: string) =>
-    call<{ status: string }>(`/operator/drivers/${id}`, token, { method: 'DELETE' }),
+    withMockFallback(
+      () => call<{ status: string }>(`/operator/drivers/${id}`, token, { method: 'DELETE' }),
+      () => ({ status: `deleted:${id}` }),
+    ),
 
   getCancellationPolicy: (token: string) =>
-    call<CancellationPolicy>('/operator/policies/cancellation', token),
+    withMockFallback(
+      () => call<CancellationPolicy>('/operator/policies/cancellation', token),
+      () => MOCK_CANCELLATION_POLICY,
+    ),
   updateCancellationPolicy: (
     token: string,
     body: Omit<CancellationPolicy, 'updated_at'>,
   ) =>
-    call<CancellationPolicy>('/operator/policies/cancellation', token, {
-      method: 'PUT',
-      body,
-    }),
+    withMockFallback(
+      () =>
+        call<CancellationPolicy>('/operator/policies/cancellation', token, {
+          method: 'PUT',
+          body,
+        }),
+      () => ({ ...body, updated_at: new Date().toISOString() }),
+    ),
 
-  getBaggagePolicy: (token: string) => call<BaggagePolicy>('/operator/policies/baggage', token),
+  getBaggagePolicy: (token: string) =>
+    withMockFallback(
+      () => call<BaggagePolicy>('/operator/policies/baggage', token),
+      () => MOCK_BAGGAGE_POLICY,
+    ),
   updateBaggagePolicy: (token: string, body: Omit<BaggagePolicy, 'updated_at'>) =>
-    call<BaggagePolicy>('/operator/policies/baggage', token, { method: 'PUT', body }),
+    withMockFallback(
+      () => call<BaggagePolicy>('/operator/policies/baggage', token, { method: 'PUT', body }),
+      () => ({ ...body, updated_at: new Date().toISOString() }),
+    ),
 };

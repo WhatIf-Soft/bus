@@ -17,7 +17,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-[var(--text-small)] font-medium text-[var(--color-text)]"
+            className="text-[length:var(--text-small)] font-medium text-[var(--color-text)]"
           >
             {label}
           </label>
@@ -29,7 +29,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           aria-describedby={error ? `${inputId}-error` : undefined}
           className={cn(
             'h-10 w-full rounded-[var(--radius-md)] border border-black/10 bg-transparent px-3',
-            'text-[var(--text-base)] text-[var(--color-text)]',
+            'text-[length:var(--text-base)] text-[var(--color-text)]',
             'placeholder:text-[var(--color-text-muted)]',
             'transition-shadow duration-[var(--duration-fast)]',
             'focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-1',
@@ -43,7 +43,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <p
             id={`${inputId}-error`}
             role="alert"
-            className="text-[var(--text-small)] text-[var(--color-error)]"
+            className="text-[length:var(--text-small)] text-[var(--color-error)]"
           >
             {error}
           </p>

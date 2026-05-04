@@ -19,23 +19,36 @@ function isOperatorRole(role: string): boolean {
 
 const tabs = [
   { href: '', label: 'Profil' },
+  { href: '/routes', label: 'Lignes' },
+  { href: '/schedules', label: 'Horaires' },
   { href: '/fleet', label: 'Flotte' },
   { href: '/drivers', label: 'Conducteurs' },
+  { href: '/manifests', label: 'Manifestes' },
+  { href: '/scan', label: 'Embarquement' },
   { href: '/policies', label: 'Politiques' },
   { href: '/reviews', label: 'Avis' },
   { href: '/finance', label: 'Finances' },
 ] as const;
 
+// Public operator pages that don't require an operator role to view.
+const PUBLIC_OPERATOR_PATHS = ['/register', '/pricing', '/docs'] as const;
+
 export default function OperatorLayout({ children }: OperatorLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, hasHydrated } = useAuth();
 
   // Locale is the first path segment (e.g., /fr/operator/...).
   const locale = pathname?.split('/')[1] ?? 'fr';
   const basePath = `/${locale}/operator`;
 
+  const isPublicPath = PUBLIC_OPERATOR_PATHS.some((p) =>
+    pathname?.startsWith(`${basePath}${p}`),
+  );
+
   useEffect(() => {
+    if (isPublicPath) return; // skip auth checks on register/pricing/docs
+    if (!hasHydrated) return;
     if (!isAuthenticated) {
       router.replace(`/${locale}/login?next=${basePath}`);
       return;
@@ -43,7 +56,20 @@ export default function OperatorLayout({ children }: OperatorLayoutProps) {
     if (user && !isOperatorRole(user.role as unknown as string)) {
       router.replace(`/${locale}`);
     }
-  }, [isAuthenticated, user, router, locale, basePath]);
+  }, [isAuthenticated, user, router, locale, basePath, hasHydrated, isPublicPath]);
+
+  // Public pages render directly without the operator-portal chrome
+  if (isPublicPath) {
+    return <>{children}</>;
+  }
+
+  if (!hasHydrated) {
+    return (
+      <main className="mx-auto max-w-3xl p-4">
+        <p className="text-sm text-[var(--color-text-muted)]">Chargement…</p>
+      </main>
+    );
+  }
 
   if (!isAuthenticated || (user && !isOperatorRole(user.role as unknown as string))) {
     return (
@@ -73,9 +99,9 @@ export default function OperatorLayout({ children }: OperatorLayoutProps) {
               >
                 <Link
                   href={`${basePath}${t.href}`}
-                  className={`px-4 py-2 text-[var(--text-small)] transition-colors ${
+                  className={`px-4 py-2 text-[length:var(--text-small)] transition-colors ${
                     activeTab === t.href
-                      ? 'border-b-2 border-[var(--color-accent-warm)] text-[var(--color-accent-warm)] font-medium'
+                      ? 'border-b-2 border-[var(--color-accent-warm-ink)] text-[var(--color-accent-warm-ink)] font-medium'
                       : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
                   }`}
                 >

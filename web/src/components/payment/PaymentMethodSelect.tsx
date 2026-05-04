@@ -15,10 +15,10 @@ const METHODS: ReadonlyArray<{
   readonly hint: string;
 }> = [
   { value: 'card', label: 'Carte bancaire', hint: 'Visa, Mastercard (3D Secure)' },
-  { value: 'orange_money', label: 'Orange Money', hint: 'C\u00f4te d\u2019Ivoire, S\u00e9n\u00e9gal' },
-  { value: 'wave', label: 'Wave', hint: 'S\u00e9n\u00e9gal, C\u00f4te d\u2019Ivoire' },
-  { value: 'mtn_momo', label: 'MTN MoMo', hint: 'C\u00f4te d\u2019Ivoire, B\u00e9nin' },
-  { value: 'moov_money', label: 'Moov Money', hint: 'B\u00e9nin, Togo' },
+  { value: 'orange_money', label: 'Orange Money', hint: 'Côte d’Ivoire, Sénégal' },
+  { value: 'wave', label: 'Wave', hint: 'Sénégal, Côte d’Ivoire' },
+  { value: 'mtn_momo', label: 'MTN MoMo', hint: 'Côte d’Ivoire, Bénin' },
+  { value: 'moov_money', label: 'Moov Money', hint: 'Bénin, Togo' },
 ];
 
 export function PaymentMethodSelect({ value, onChange }: PaymentMethodSelectProps) {

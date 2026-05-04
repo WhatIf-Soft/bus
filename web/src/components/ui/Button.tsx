@@ -16,9 +16,9 @@ const variantStyles = {
 } as const;
 
 const sizeStyles = {
-  sm: 'h-8 px-3 text-[var(--text-small)] rounded-[var(--radius-sm)]',
-  md: 'h-10 px-4 text-[var(--text-base)] rounded-[var(--radius-md)]',
-  lg: 'h-12 px-6 text-[var(--text-base)] rounded-[var(--radius-lg)]',
+  sm: 'h-8 px-3 text-[length:var(--text-small)] rounded-[var(--radius-sm)]',
+  md: 'h-10 px-4 text-[length:var(--text-base)] rounded-[var(--radius-md)]',
+  lg: 'h-12 px-6 text-[length:var(--text-base)] rounded-[var(--radius-lg)]',
 } as const;
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {

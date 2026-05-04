@@ -1,4 +1,5 @@
 import { apiClient } from './api-client';
+import { withMockFallback } from './mock/fallback';
 
 export type PaymentMethod = 'card' | 'orange_money' | 'wave' | 'mtn_momo' | 'moov_money';
 export type PaymentStatus =
@@ -32,50 +33,85 @@ export interface InitiatePaymentPayload {
   readonly msisdn?: string;
 }
 
+function buildMockPayment(payload: InitiatePaymentPayload, status: PaymentStatus): Payment {
+  const now = new Date().toISOString();
+  const isMomo = payload.method !== 'card';
+  return {
+    id: `p-demo-${Date.now().toString(36)}`,
+    booking_id: payload.booking_id,
+    user_id: 'u-demo-traveler',
+    amount_cents: 1500000,
+    currency: 'XOF',
+    method: payload.method,
+    status,
+    external_ref: `demo_ref_${Date.now()}`,
+    failure_reason: null,
+    msisdn: payload.msisdn ?? null,
+    created_at: now,
+    updated_at: now,
+    completed_at: status === 'succeeded' ? now : null,
+  };
+}
+
 export async function initiatePayment(
   payload: InitiatePaymentPayload,
   token: string,
   idempotencyKey: string,
 ): Promise<Payment> {
-  const res = await apiClient<Payment>('/payments/', {
-    method: 'POST',
-    body: payload,
-    token,
-    headers: { 'Idempotency-Key': idempotencyKey },
-  });
-  if (!res.success || !res.data) {
-    throw new Error(res.error?.message ?? 'payment failed');
-  }
-  return res.data;
+  return withMockFallback(
+    async () => {
+      const res = await apiClient<Payment>('/payments/', {
+        method: 'POST',
+        body: payload,
+        token,
+        headers: { 'Idempotency-Key': idempotencyKey },
+      });
+      if (!res.success || !res.data) throw new Error(res.error?.message ?? 'payment failed');
+      return res.data;
+    },
+    () => buildMockPayment(payload, payload.method === 'card' ? 'succeeded' : 'processing'),
+  );
 }
 
 export async function getPayment(id: string, token: string): Promise<Payment> {
-  const res = await apiClient<Payment>(`/payments/${id}`, { token });
-  if (!res.success || !res.data) {
-    throw new Error(res.error?.message ?? 'payment not found');
-  }
-  return res.data;
+  return withMockFallback(
+    async () => {
+      const res = await apiClient<Payment>(`/payments/${id}`, { token });
+      if (!res.success || !res.data) throw new Error(res.error?.message ?? 'payment not found');
+      return res.data;
+    },
+    () =>
+      buildMockPayment(
+        { booking_id: 'bk-demo', method: 'orange_money' },
+        'succeeded',
+      ),
+  );
 }
 
-// simulateWebhook is a dev-only helper: sends a webhook for a Mobile Money payment
-// to flip it from `processing` → `succeeded`. The bearer token is forwarded so the
-// payment-service can call booking-service confirm.
+// simulateWebhook flips a Mobile Money payment `processing` → `succeeded`.
 export async function simulateWebhook(
   paymentId: string,
   success: boolean,
   token: string,
 ): Promise<Payment> {
-  const res = await apiClient<Payment>(`/payments/${paymentId}/webhook`, {
-    method: 'POST',
-    body: {
-      success,
-      external_ref: `webhook_${Date.now()}`,
-      failure_reason: success ? '' : 'user_rejected',
+  return withMockFallback(
+    async () => {
+      const res = await apiClient<Payment>(`/payments/${paymentId}/webhook`, {
+        method: 'POST',
+        body: {
+          success,
+          external_ref: `webhook_${Date.now()}`,
+          failure_reason: success ? '' : 'user_rejected',
+        },
+        token,
+      });
+      if (!res.success || !res.data) throw new Error(res.error?.message ?? 'webhook failed');
+      return res.data;
     },
-    token,
-  });
-  if (!res.success || !res.data) {
-    throw new Error(res.error?.message ?? 'webhook failed');
-  }
-  return res.data;
+    () =>
+      buildMockPayment(
+        { booking_id: 'bk-demo', method: 'orange_money' },
+        success ? 'succeeded' : 'failed',
+      ),
+  );
 }

@@ -105,7 +105,7 @@ function getStatusConfig(status: string): {
 export default function BookingDetailPage({ params }: PageProps) {
   const { locale, id } = use(params);
   const router = useRouter();
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken, isAuthenticated, hasHydrated } = useAuth();
   const [booking, setBooking] = useState<Booking | null>(null);
   const [tickets, setTickets] = useState<ReadonlyArray<Ticket>>([]);
   const [error, setError] = useState<string | null>(null);
@@ -113,6 +113,7 @@ export default function BookingDetailPage({ params }: PageProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (!isAuthenticated) {
       router.replace(`/${locale}/login?next=/${locale}/account/bookings/${id}`);
       return;
@@ -122,7 +123,7 @@ export default function BookingDetailPage({ params }: PageProps) {
       .then(setBooking)
       .catch((e) => setError(e instanceof Error ? e.message : 'erreur'));
     listTicketsForBooking(id, accessToken).then(setTickets).catch(() => {});
-  }, [accessToken, isAuthenticated, id, locale, router]);
+  }, [accessToken, isAuthenticated, hasHydrated, id, locale, router]);
 
   async function onIssue(): Promise<void> {
     if (!accessToken) return;

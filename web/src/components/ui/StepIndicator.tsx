@@ -26,7 +26,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                   isCompleted &&
                     'bg-[var(--color-accent-green)] text-white',
                   isActive &&
-                    'bg-[var(--color-accent-warm)] text-white',
+                    'bg-[var(--color-accent-warm-ink)] text-white',
                   isUpcoming &&
                     'border border-black/20 text-[var(--color-text-muted)]',
                 )}
@@ -42,7 +42,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
               {/* Label — hidden on mobile */}
               <span
                 className={cn(
-                  'mt-1.5 hidden text-center text-[var(--text-xs)] sm:block',
+                  'mt-1.5 hidden text-center text-[length:var(--text-xs)] sm:block',
                   isActive && 'font-medium text-[var(--color-text)]',
                   !isActive && 'text-[var(--color-text-muted)]',
                 )}

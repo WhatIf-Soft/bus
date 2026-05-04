@@ -43,3 +43,10 @@ docker-compose.override.yml
 
 # Build artifacts
 bin/
+
+# Playwright MCP transient logs/snapshots
+.playwright-mcp/
+
+# Vercel CLI link
+.vercel/
+.vercel

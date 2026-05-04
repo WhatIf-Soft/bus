@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="BusExpress">
+  <title>BusExpress — La Route Dorée</title>
+
+  <!-- Cream rounded-square backdrop so the favicon reads as a self-contained badge
+       on any browser-tab color. Cream matches the site's warm surface. -->
+  <rect width="32" height="32" rx="7.5" fill="#F7F3E8"/>
+
+  <!-- Golden sun — the Golden Route's namesake. Positioned upper-center so the
+       mountain silhouette will eclipse its lower half. -->
+  <circle cx="16" cy="13.25" r="7.6" fill="#E5C170"/>
+
+  <!-- Warm inner rim for dimensional depth at display sizes -->
+  <circle cx="16" cy="13.25" r="7.6" fill="none" stroke="#C9904F" stroke-width="0.6" opacity="0.55"/>
+
+  <!-- Navy mountain triangle rising into the sun -->
+  <path d="M 5.5 22.5 L 19 8.75 L 30.5 22.5 Z" fill="#1F2A68"/>
+
+  <!-- Navy foreground land — wraps the lower portion of the badge -->
+  <path d="M 0 22.5 L 32 22.5 L 32 32 L 0 32 Z" fill="#1F2A68"/>
+
+  <!-- Golden Route — a thin gold stripe along the horizon, the brand's
+       signature dashed-road motif compressed to a single ribbon -->
+  <rect x="0" y="22.5" width="32" height="0.9" fill="#E5C170"/>
+
+  <!-- Second, dimmer warm stripe just below for depth -->
+  <rect x="0" y="23.5" width="32" height="0.5" fill="#C9904F" opacity="0.5"/>
+</svg>

@@ -11,9 +11,9 @@ const variantStyles = {
   error:
     'bg-[var(--color-error)]/15 text-[var(--color-error)]',
   gold:
-    'bg-[var(--color-accent-gold)]/15 text-[var(--color-accent-gold)]',
+    'bg-[var(--color-accent-gold)]/25 text-[var(--color-accent-gold-ink)]',
   warm:
-    'bg-[var(--color-accent-warm)]/15 text-[var(--color-accent-warm)]',
+    'bg-[var(--color-accent-warm)]/20 text-[var(--color-accent-warm-ink)]',
   primary:
     'bg-[var(--color-primary)]/15 text-[var(--color-primary)]',
 } as const;
@@ -31,7 +31,7 @@ export function Badge({ children, variant = 'default', className }: BadgeProps) 
     <span
       className={cn(
         'inline-flex items-center rounded-[var(--radius-full)] px-2.5 py-0.5',
-        'text-[var(--text-xs)] font-medium leading-tight',
+        'text-[length:var(--text-xs)] font-medium leading-tight',
         variantStyles[variant],
         className,
       )}

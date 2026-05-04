@@ -6,8 +6,9 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
+import { Logo } from '@/components/layout/Logo';
 import { cn } from '@/lib/cn';
-import { UserRole } from '@busexpress/shared-types';
+import { UserRole } from '@/types/shared';
 
 interface NavLink {
   readonly label: string;
@@ -18,8 +19,9 @@ function getNavLinks(locale: string): readonly NavLink[] {
   return [
     { label: 'Accueil', href: `/${locale}` },
     { label: 'Rechercher', href: `/${locale}/search` },
+    { label: 'Suivi', href: `/${locale}/tracking` },
     { label: 'Mes Voyages', href: `/${locale}/account/bookings` },
-    { label: 'Support', href: `/${locale}/account/support` },
+    { label: 'Aide', href: `/${locale}/help` },
   ];
 }
 
@@ -45,9 +47,10 @@ export function Header() {
         {/* Logo */}
         <Link
           href={`/${locale}`}
-          className="text-xl font-bold text-[var(--color-primary)]"
+          className="group inline-flex items-center outline-none transition-opacity hover:opacity-90 focus-visible:opacity-90"
+          aria-label="BusExpress — Accueil"
         >
-          BusExpress
+          <Logo />
         </Link>
 
         {/* Center nav */}
@@ -59,9 +62,9 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'text-[var(--text-small)] transition-colors duration-[var(--duration-fast)]',
+                  'text-[length:var(--text-small)] transition-colors duration-[var(--duration-fast)]',
                   active
-                    ? 'font-medium text-[var(--color-accent-warm)]'
+                    ? 'font-medium text-[var(--color-accent-warm-ink)]'
                     : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]',
                 )}
               >
@@ -71,7 +74,16 @@ export function Header() {
           })}
         </nav>
 
-        {/* Right: auth area */}
+        {/* Right: command shortcut + auth area */}
+        <div className="flex items-center gap-3">
+          <kbd
+            className="hidden items-center gap-1 rounded-[var(--radius-md)] border border-black/10 bg-black/[0.03] px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-[var(--color-text-muted)] shadow-sm lg:inline-flex"
+            aria-hidden="true"
+            title="Ouvrir la palette de commandes"
+          >
+            <span>⌘</span>
+            <span>K</span>
+          </kbd>
         {isAuthenticated && user ? (
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
@@ -80,7 +92,7 @@ export function Header() {
                 className="flex items-center gap-2 rounded-[var(--radius-md)] px-2 py-1 transition-colors duration-[var(--duration-fast)] hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
               >
                 <Avatar name={user.email} size="sm" />
-                <span className="max-w-[140px] truncate text-[var(--text-small)] text-[var(--color-text-muted)]">
+                <span className="max-w-[140px] truncate text-[length:var(--text-small)] text-[var(--color-text-muted)]">
                   {user.email}
                 </span>
               </button>
@@ -98,7 +110,7 @@ export function Header() {
                 <DropdownMenu.Item asChild>
                   <Link
                     href={`/${locale}/account`}
-                    className="flex w-full cursor-pointer items-center rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-small)] text-[var(--color-text)] outline-none transition-colors hover:bg-black/5 focus:bg-black/5"
+                    className="flex w-full cursor-pointer items-center rounded-[var(--radius-md)] px-3 py-2 text-[length:var(--text-small)] text-[var(--color-text)] outline-none transition-colors hover:bg-black/5 focus:bg-black/5"
                   >
                     Mon Compte
                   </Link>
@@ -108,7 +120,7 @@ export function Header() {
                   <DropdownMenu.Item asChild>
                     <Link
                       href={`/${locale}/operator`}
-                      className="flex w-full cursor-pointer items-center rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-small)] text-[var(--color-text)] outline-none transition-colors hover:bg-black/5 focus:bg-black/5"
+                      className="flex w-full cursor-pointer items-center rounded-[var(--radius-md)] px-3 py-2 text-[length:var(--text-small)] text-[var(--color-text)] outline-none transition-colors hover:bg-black/5 focus:bg-black/5"
                     >
                       Portail Opérateur
                     </Link>
@@ -119,7 +131,7 @@ export function Header() {
 
                 <DropdownMenu.Item
                   onSelect={logout}
-                  className="flex w-full cursor-pointer items-center rounded-[var(--radius-md)] px-3 py-2 text-[var(--text-small)] text-[var(--color-error)] outline-none transition-colors hover:bg-black/5 focus:bg-black/5"
+                  className="flex w-full cursor-pointer items-center rounded-[var(--radius-md)] px-3 py-2 text-[length:var(--text-small)] text-[var(--color-error)] outline-none transition-colors hover:bg-black/5 focus:bg-black/5"
                 >
                   Déconnexion
                 </DropdownMenu.Item>
@@ -131,12 +143,18 @@ export function Header() {
             <Link href={`/${locale}/login`}>Connexion</Link>
           </Button>
         )}
+        </div>
       </div>
 
-      {/* Terracotta accent line */}
+      {/* Golden Route horizon — fading gold thread that meets the dark hero */}
       <span
-        className="absolute bottom-0 left-0 h-[2px] w-full bg-[var(--color-accent-warm)]/30"
+        className="pointer-events-none absolute bottom-0 left-0 h-px w-full"
         aria-hidden="true"
+        style={{
+          background:
+            'linear-gradient(90deg, transparent 0%, var(--color-accent-warm) 18%, var(--color-accent-gold) 50%, var(--color-accent-warm) 82%, transparent 100%)',
+          opacity: 0.6,
+        }}
       />
     </header>
   );

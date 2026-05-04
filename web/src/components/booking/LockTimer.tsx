@@ -41,12 +41,12 @@ export function LockTimer({ expiresAt, onExpire }: LockTimerProps) {
         'flex w-full items-center justify-between rounded-[var(--radius-lg)] px-4 py-2',
         warn
           ? 'animate-pulse border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/15 text-amber-900'
-          : 'border border-[var(--color-accent-warm)]/20 bg-[var(--color-accent-warm)]/10 text-[var(--color-accent-warm)]',
+          : 'border border-[var(--color-accent-warm)]/30 bg-[var(--color-accent-warm)]/15 text-[var(--color-accent-warm-ink)]',
       )}
     >
       <span className="flex items-center gap-2 text-sm">
         <span aria-hidden>&#x23F1;</span>
-        Si\u00e8ge r\u00e9serv\u00e9
+        Siège réservé
       </span>
       <span className="font-mono text-sm tabular-nums">{formatRemaining(remaining)}</span>
     </div>

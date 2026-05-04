@@ -22,7 +22,7 @@ function HomeIcon({ active }: { readonly active: boolean }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className={active ? 'text-[var(--color-accent-warm)]' : 'text-[var(--color-text-muted)]'}
+      className={active ? 'text-[var(--color-accent-warm-ink)]' : 'text-[var(--color-text-muted)]'}
     >
       <path d="M3 10.5L12 3l9 7.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10.5z" />
     </svg>
@@ -41,7 +41,7 @@ function SearchIcon({ active }: { readonly active: boolean }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className={active ? 'text-[var(--color-accent-warm)]' : 'text-[var(--color-text-muted)]'}
+      className={active ? 'text-[var(--color-accent-warm-ink)]' : 'text-[var(--color-text-muted)]'}
     >
       <circle cx="11" cy="11" r="7" />
       <path d="M21 21l-4.35-4.35" />
@@ -61,7 +61,7 @@ function TicketIcon({ active }: { readonly active: boolean }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className={active ? 'text-[var(--color-accent-warm)]' : 'text-[var(--color-text-muted)]'}
+      className={active ? 'text-[var(--color-accent-warm-ink)]' : 'text-[var(--color-text-muted)]'}
     >
       <rect x="2" y="4" width="20" height="16" rx="2" />
       <path d="M2 10h20" />
@@ -82,7 +82,7 @@ function PersonIcon({ active }: { readonly active: boolean }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      className={active ? 'text-[var(--color-accent-warm)]' : 'text-[var(--color-text-muted)]'}
+      className={active ? 'text-[var(--color-accent-warm-ink)]' : 'text-[var(--color-text-muted)]'}
     >
       <circle cx="12" cy="8" r="4" />
       <path d="M4 21c0-4.418 3.582-7 8-7s8 2.582 8 7" />
@@ -141,7 +141,7 @@ export function BottomTabBar() {
             className={cn(
               'relative flex flex-1 flex-col items-center gap-0.5 pt-1 transition-colors duration-[var(--duration-fast)]',
               active
-                ? 'text-[var(--color-accent-warm)]'
+                ? 'text-[var(--color-accent-warm-ink)]'
                 : 'text-[var(--color-text-muted)]',
             )}
           >
@@ -154,7 +154,7 @@ export function BottomTabBar() {
             <span className={active ? 'tab-active-icon' : 'transition-transform duration-[var(--duration-fast)]'}>
               {tab.icon(active)}
             </span>
-            <span className="text-[var(--text-xs)]">{tab.label}</span>
+            <span className="text-[length:var(--text-xs)]">{tab.label}</span>
           </Link>
         );
       })}

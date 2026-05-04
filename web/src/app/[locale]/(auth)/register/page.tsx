@@ -8,7 +8,7 @@ export default function RegisterPage() {
   return (
     <section className="mx-auto flex min-h-[70vh] w-full max-w-md flex-col justify-center gap-6 py-[var(--space-section)]">
       <header className="flex flex-col gap-2">
-        <h1 className="text-[var(--text-heading)] font-bold tracking-tight">
+        <h1 className="text-[length:var(--text-heading)] font-bold tracking-tight">
           {t('register')}
         </h1>
         <p className="text-sm text-[var(--color-text-muted)]">

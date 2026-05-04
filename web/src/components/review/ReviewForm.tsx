@@ -76,13 +76,13 @@ export function ReviewForm({ bookingId, token, onSubmitted }: ReviewFormProps) {
         maxLength={160}
       />
       <div className="flex flex-col gap-1.5">
-        <label className="text-[var(--text-small)] font-medium">Commentaire (optionnel)</label>
+        <label className="text-[length:var(--text-small)] font-medium">Commentaire (optionnel)</label>
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
           maxLength={2000}
           rows={4}
-          className="rounded-[var(--radius-md)] border border-black/10 bg-transparent p-3 text-[var(--text-base)]"
+          className="rounded-[var(--radius-md)] border border-black/10 bg-transparent p-3 text-[length:var(--text-base)]"
         />
       </div>
       {error && (

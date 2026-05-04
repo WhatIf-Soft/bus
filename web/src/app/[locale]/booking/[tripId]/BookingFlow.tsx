@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import type { Trip } from '@/lib/search-api';
 import {
   createBooking,
@@ -25,6 +26,7 @@ import { SeatMap } from '@/components/booking/SeatMap';
 import { PassengerForm } from '@/components/booking/PassengerForm';
 import { LockTimer } from '@/components/booking/LockTimer';
 import { BookingSummary } from '@/components/booking/BookingSummary';
+import { Confetti } from '@/components/booking/Confetti';
 import { PaymentMethodSelect } from '@/components/payment/PaymentMethodSelect';
 import { CardForm } from '@/components/payment/CardForm';
 import { MobileMoneyForm } from '@/components/payment/MobileMoneyForm';
@@ -36,7 +38,7 @@ interface BookingFlowProps {
 
 type Step = 'select' | 'passengers' | 'pay' | 'wait_mm' | 'done';
 
-const STEP_LABELS = ['Si\u00e8ges', 'Passagers', 'Paiement', 'Confirmation'] as const;
+const STEP_LABELS = ['Sièges', 'Passagers', 'Paiement', 'Confirmation'] as const;
 
 function stepToIndex(step: Step): number {
   switch (step) {
@@ -60,7 +62,7 @@ const DEFAULT_CARD_TOKEN = 'tok_test_ok';
 
 export function BookingFlow({ trip, locale }: BookingFlowProps) {
   const router = useRouter();
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken, isAuthenticated, hasHydrated } = useAuth();
 
   const [step, setStep] = useState<Step>('select');
   const [seats, setSeats] = useState<ReadonlyArray<string>>([]);
@@ -88,11 +90,12 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
   }, [seats]);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (!isAuthenticated) {
       const next = encodeURIComponent(`/${locale}/booking/${trip.id}`);
       router.replace(`/${locale}/login?next=${next}`);
     }
-  }, [isAuthenticated, router, locale, trip.id]);
+  }, [isAuthenticated, hasHydrated, router, locale, trip.id]);
 
   // Poll Mobile Money payment status while waiting.
   useEffect(() => {
@@ -111,7 +114,7 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
           setStep('done');
         } else if (p.status === 'failed' || p.status === 'cancelled') {
           clearInterval(id);
-          setError('Le paiement a \u00e9chou\u00e9. Veuillez r\u00e9essayer.');
+          setError('Le paiement a échoué. Veuillez réessayer.');
           setStep('pay');
         }
       } catch {
@@ -174,11 +177,16 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
         } catch {
           // tickets can be reissued from the booking detail page
         }
+        toast.success('Paiement confirmé', {
+          description: 'Votre billet est disponible dans Mes Réservations.',
+        });
         setStep('done');
         return;
       }
       if (p.status === 'failed') {
-        setError(p.failure_reason ?? 'Le paiement a \u00e9chou\u00e9.');
+        const reason = p.failure_reason ?? 'Le paiement a échoué.';
+        setError(reason);
+        toast.error('Paiement refusé', { description: reason });
         return;
       }
       // processing -> mobile money waiting screen
@@ -202,8 +210,11 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
     }
   }
 
+  if (!hasHydrated) {
+    return <p className="text-sm text-[var(--color-text-muted)]">Chargement…</p>;
+  }
   if (!isAuthenticated) {
-    return <p>Redirection\u2026</p>;
+    return <p>Redirection…</p>;
   }
 
   return (
@@ -212,9 +223,9 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
 
       {step === 'select' && (
         <>
-          <h2 className="text-xl font-semibold">1. Choisissez vos si\u00e8ges</h2>
+          <h2 className="text-xl font-semibold">1. Choisissez vos sièges</h2>
           <p className="text-sm text-[var(--color-text-muted)]">
-            Maximum 9 si\u00e8ges par r\u00e9servation.
+            Maximum 9 sièges par réservation.
           </p>
           <SeatMap
             tripId={trip.id}
@@ -234,7 +245,7 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
                 className="w-full"
                 onClick={() => setStep('passengers')}
               >
-                {seats.length} si\u00e8ge(s) \u00b7 Continuer
+                {seats.length} siège(s) · Continuer
               </Button>
             </StickyBar>
           )}
@@ -252,10 +263,10 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
           )}
           <div className="flex justify-between">
             <Button variant="ghost" onClick={() => setStep('select')}>
-              \u2190 Si\u00e8ges
+              ← Sièges
             </Button>
             <Button onClick={holdSeats} disabled={!passengersComplete || submitting}>
-              {submitting ? 'R\u00e9servation\u2026' : 'R\u00e9server les si\u00e8ges'}
+              {submitting ? 'Réservation…' : 'Réserver les sièges'}
             </Button>
           </div>
         </>
@@ -268,7 +279,7 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
             <LockTimer
               expiresAt={booking.lock_expires_at}
               onExpire={() => {
-                setError('Votre r\u00e9servation a expir\u00e9. Veuillez recommencer.');
+                setError('Votre réservation a expiré. Veuillez recommencer.');
                 setStep('select');
                 setBooking(null);
               }}
@@ -298,10 +309,10 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
 
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setStep('passengers')}>
-              \u2190 Modifier
+              ← Modifier
             </Button>
             <Button onClick={pay} disabled={submitting}>
-              {submitting ? 'Paiement\u2026' : 'Payer maintenant'}
+              {submitting ? 'Paiement…' : 'Payer maintenant'}
             </Button>
           </div>
         </>
@@ -312,16 +323,16 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
           <h2 className="text-xl font-semibold">Confirmation Mobile Money</h2>
           <div className="rounded border border-amber-200 bg-amber-50 p-4 text-sm">
             <p>
-              Une demande de paiement a \u00e9t\u00e9 envoy\u00e9e au num\u00e9ro{' '}
-              <strong>{payment.msisdn}</strong>. Approuvez le d\u00e9bit depuis votre t\u00e9l\u00e9phone.
+              Une demande de paiement a été envoyée au numéro{' '}
+              <strong>{payment.msisdn}</strong>. Approuvez le débit depuis votre téléphone.
             </p>
             <p className="mt-2 text-xs text-amber-900">
-              Statut actuel : <code>{payment.status}</code>. La page se mettra \u00e0 jour
+              Statut actuel : <code>{payment.status}</code>. La page se mettra à jour
               automatiquement (toutes les 3 s).
             </p>
           </div>
           <div className="rounded border border-dashed border-black/20 p-3 text-xs">
-            <p className="mb-2 font-medium">&#x1F9EA; Mode dev \u2014 simuler la r\u00e9ponse op\u00e9rateur :</p>
+            <p className="mb-2 font-medium">&#x1F9EA; Mode dev — simuler la réponse opérateur :</p>
             <div className="flex gap-2">
               <Button size="sm" onClick={() => devSimulateConfirm(true)} disabled={submitting}>
                 Approuver
@@ -340,35 +351,47 @@ export function BookingFlow({ trip, locale }: BookingFlowProps) {
       )}
 
       {step === 'done' && (
-        <div className="flex flex-col items-center gap-6 py-8">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-[var(--color-accent-green)] bg-[var(--color-accent-green)]/10">
+        <div className="animate-scale-in relative flex flex-col items-center gap-6 rounded-[var(--radius-xl)] border border-[var(--color-accent-green)]/20 bg-gradient-to-b from-[var(--color-accent-green)]/5 to-transparent p-8 text-center">
+          <Confetti />
+          <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-accent-green)]/10 ring-4 ring-[var(--color-accent-green)]/20">
+            <div className="absolute inset-0 animate-ping rounded-full bg-[var(--color-accent-green)]/10" />
             <svg
-              className="h-10 w-10 text-[var(--color-accent-green)]"
+              className="relative h-12 w-12 text-[var(--color-accent-green)]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              strokeWidth={2}
+              strokeWidth={3}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold">R\u00e9servation confirm\u00e9e !</h2>
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Réservation confirmée&nbsp;!</h2>
+            <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+              Un email de confirmation vous a été envoyé.
+            </p>
+          </div>
           {booking && (
-            <Badge variant="primary">{booking.id}</Badge>
+            <div className="flex flex-col items-center gap-1 rounded-[var(--radius-md)] bg-white px-4 py-2 shadow-sm ring-1 ring-black/5">
+              <span className="text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
+                Référence
+              </span>
+              <Badge variant="primary">{booking.id}</Badge>
+            </div>
           )}
-          <div className="flex flex-col items-center gap-3 sm:flex-row">
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row">
             {booking && (
               <>
                 <Button
                   onClick={() => router.push(`/${locale}/account/bookings/${booking.id}`)}
                 >
-                  T\u00e9l\u00e9charger mes billets
+                  Télécharger mes billets
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   onClick={() => router.push(`/${locale}/account/bookings/${booking.id}`)}
                 >
-                  Voir ma r\u00e9servation
+                  Voir ma réservation
                 </Button>
               </>
             )}

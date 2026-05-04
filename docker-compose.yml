@@ -87,11 +87,12 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_OPTS: "-Dzookeeper.4lw.commands.whitelist=srvr,ruok,stat"
     volumes:
       - zookeeper_data:/var/lib/zookeeper/data
       - zookeeper_log:/var/lib/zookeeper/log
     healthcheck:
-      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok"]
+      test: ["CMD-SHELL", "(exec 3<>/dev/tcp/localhost/2181; echo -n ruok >&3; head -c 4 <&3) | grep -q imok"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -208,6 +209,7 @@ services:
     environment:
       VAULT_DEV_ROOT_TOKEN_ID: dev-token
       VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
+      VAULT_ADDR: "http://127.0.0.1:8200"
     cap_add:
       - IPC_LOCK
     healthcheck:

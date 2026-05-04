@@ -34,7 +34,7 @@ function Toast() {
         variantStyles[variant],
       )}
     >
-      <ToastPrimitive.Description className="text-[var(--text-base)] leading-snug">
+      <ToastPrimitive.Description className="text-[length:var(--text-base)] leading-snug">
         {message}
       </ToastPrimitive.Description>
     </ToastPrimitive.Root>

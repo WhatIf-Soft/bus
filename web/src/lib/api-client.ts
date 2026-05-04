@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@busexpress/shared-types';
+import type { ApiResponse } from '@/types/shared';
 
 const USER_API = process.env.USER_API_URL || 'http://localhost:4001';
 const SEARCH_API = process.env.SEARCH_API_URL || 'http://localhost:4002';

@@ -48,10 +48,10 @@ export function ConfirmDialog({
             'focus:outline-none',
           )}
         >
-          <Dialog.Title className="text-[var(--text-heading)] font-semibold text-[var(--color-text)]">
+          <Dialog.Title className="text-[length:var(--text-heading)] font-semibold text-[var(--color-text)]">
             {title}
           </Dialog.Title>
-          <Dialog.Description className="mt-2 text-[var(--text-base)] leading-relaxed text-[var(--color-text-muted)]">
+          <Dialog.Description className="mt-2 text-[length:var(--text-base)] leading-relaxed text-[var(--color-text-muted)]">
             {description}
           </Dialog.Description>
 

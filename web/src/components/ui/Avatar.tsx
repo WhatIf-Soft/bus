@@ -1,9 +1,9 @@
 import { cn } from '@/lib/cn';
 
 const sizeStyles = {
-  sm: 'h-8 w-8 text-[var(--text-xs)]',
-  md: 'h-10 w-10 text-[var(--text-small)]',
-  lg: 'h-14 w-14 text-[var(--text-base)]',
+  sm: 'h-8 w-8 text-[length:var(--text-xs)]',
+  md: 'h-10 w-10 text-[length:var(--text-small)]',
+  lg: 'h-14 w-14 text-[length:var(--text-base)]',
 } as const;
 
 type AvatarSize = keyof typeof sizeStyles;

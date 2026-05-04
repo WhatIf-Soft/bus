@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
@@ -25,6 +25,18 @@ export function LoginForm({ onRequires2FA }: LoginFormProps) {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
+
+  // Demo-fill: listen for events from DemoHintBanner to pre-fill the form.
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ email: string; password: string }>).detail;
+      if (!detail) return;
+      form.setValue('email', detail.email);
+      form.setValue('password', detail.password);
+    };
+    window.addEventListener('bex-demo-fill', handler);
+    return () => window.removeEventListener('bex-demo-fill', handler);
+  }, [form]);
 
   async function onSubmit(values: LoginInput) {
     setServerError(null);

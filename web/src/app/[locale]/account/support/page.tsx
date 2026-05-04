@@ -44,7 +44,7 @@ function statusBadge(s: TicketStatus): string {
 
 export default function SupportPage({ params }: PageProps) {
   const router = useRouter();
-  const { accessToken, isAuthenticated } = useAuth();
+  const { accessToken, isAuthenticated, hasHydrated } = useAuth();
   const [locale, setLocale] = useState('fr');
   const [tickets, setTickets] = useState<ReadonlyArray<Ticket>>([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +61,7 @@ export default function SupportPage({ params }: PageProps) {
   }, [params]);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (!isAuthenticated) {
       router.replace(`/${locale}/login?next=/${locale}/account/support`);
       return;
@@ -72,7 +73,7 @@ export default function SupportPage({ params }: PageProps) {
       .then((r) => setTickets(r.tickets))
       .catch((e) => setError(e instanceof Error ? e.message : 'erreur'))
       .finally(() => setLoading(false));
-  }, [accessToken, isAuthenticated, router, locale]);
+  }, [accessToken, isAuthenticated, hasHydrated, router, locale]);
 
   async function submit(): Promise<void> {
     if (!accessToken) return;
@@ -104,7 +105,7 @@ export default function SupportPage({ params }: PageProps) {
           required
         />
         <div className="flex flex-col gap-1.5">
-          <label className="text-[var(--text-small)] font-medium">Catégorie</label>
+          <label className="text-[length:var(--text-small)] font-medium">Catégorie</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value as TicketCategory)}
@@ -118,7 +119,7 @@ export default function SupportPage({ params }: PageProps) {
           </select>
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-[var(--text-small)] font-medium">Description</label>
+          <label className="text-[length:var(--text-small)] font-medium">Description</label>
           <textarea
             rows={5}
             value={body}

@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   /* Brand palette — "Golden Route" */
@@ -8,6 +11,13 @@
   --color-accent-gold: oklch(82% 0.14 85);
   --color-accent-green: oklch(62% 0.17 160);
 
+  /* Text-safe accent variants — darkened for WCAG AA on light surfaces
+     Use -ink variants whenever the token is applied to text/icons on cream or white.
+     Original bright tokens stay reserved for fills, strokes, dots, decorative
+     flourishes and text on dark navy surfaces. */
+  --color-accent-warm-ink: oklch(48% 0.16 55);
+  --color-accent-gold-ink: oklch(45% 0.13 75);
+
   /* Surfaces — warm cream */
   --color-bg: oklch(97% 0.006 80);
   --color-surface: oklch(99% 0.003 80);
@@ -15,13 +25,35 @@
 
   /* Text */
   --color-text: oklch(15% 0.02 260);
-  --color-text-muted: oklch(42% 0.02 260);
+  --color-text-muted: oklch(38% 0.02 260);
   --color-text-inverse: oklch(98% 0 0);
 
   /* Semantic */
   --color-success: oklch(60% 0.18 150);
   --color-warning: oklch(75% 0.15 80);
   --color-error: oklch(55% 0.22 25);
+
+  /* shadcn/ui tokens — bridged to Golden Route palette */
+  --background: oklch(97% 0.006 80);
+  --foreground: oklch(15% 0.02 260);
+  --card: oklch(100% 0 0);
+  --card-foreground: oklch(15% 0.02 260);
+  --popover: oklch(100% 0 0);
+  --popover-foreground: oklch(15% 0.02 260);
+  --primary: oklch(35% 0.15 260);
+  --primary-foreground: oklch(98% 0 0);
+  --secondary: oklch(72% 0.17 70);
+  --secondary-foreground: oklch(100% 0 0);
+  --muted: oklch(95% 0.005 80);
+  --muted-foreground: oklch(38% 0.02 260);
+  --accent: oklch(82% 0.14 85 / 0.15);
+  --accent-foreground: oklch(35% 0.15 260);
+  --destructive: oklch(55% 0.22 25);
+  --destructive-foreground: oklch(98% 0 0);
+  --border: oklch(0% 0 0 / 0.08);
+  --input: oklch(0% 0 0 / 0.08);
+  --ring: oklch(72% 0.17 70);
+  --radius: 0.625rem;
 
   /* Typography */
   --text-hero: clamp(2.5rem, 1rem + 5vw, 4.5rem);
@@ -67,12 +99,74 @@
   }
 }
 
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
 body {
   font-family: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif;
   letter-spacing: -0.01em;
   color: var(--color-text);
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Display type — Fraunces variable serif ─── */
+
+.font-display,
+.display {
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  font-variation-settings: 'opsz' 144, 'SOFT' 50;
+  letter-spacing: -0.025em;
+  font-feature-settings: 'ss01' on, 'ss02' on;
+}
+
+h1.display, h2.display, .display h1, .display h2 {
+  font-weight: 500;
+}
+
+/* ─── Grain texture overlay ─── */
+
+.grain {
+  position: relative;
+  isolation: isolate;
+}
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.65'/></svg>");
+}
+
+.grain-strong::after {
+  opacity: 0.12;
 }
 
 /* ─── Scroll-triggered entrance animations ─── */
@@ -339,6 +433,43 @@ body {
   height: 6px;
   border-radius: 50%;
   animation: confetti-fall 1.5s ease-out forwards;
+}
+
+/* ─── Marquee (infinite horizontal scroll) ─── */
+
+@keyframes marquee-half {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ─── Phare beam sweep — featured-route lighthouse ─── */
+
+@keyframes phare-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Bus wheel spin on hover ─── */
+
+@keyframes wheel-spin {
+  to { transform: rotate(360deg); }
+}
+.wheel-anim {
+  transform-origin: center;
+  transition: transform 200ms ease-out;
+}
+.group:hover .wheel-anim {
+  animation: wheel-spin 0.8s linear infinite;
+}
+
+/* ─── Kente shimmer (scroll into view) ─── */
+
+@keyframes kente-shimmer {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.55; }
+}
+.kente-divider {
+  animation: kente-shimmer 6s ease-in-out infinite;
 }
 
 /* ─── Smooth page transitions ─── */
